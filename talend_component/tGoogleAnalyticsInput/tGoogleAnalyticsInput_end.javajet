@@ -1,0 +1,55 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
+		org.talend.core.model.metadata.types.JavaType
+		java.util.List 
+    	java.util.Map		
+	" 
+%>
+<% 
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode) codeGenArgument.getArgument();
+    String cid = node.getUniqueName(); 
+	String maxRowsStr = ElementParameterParser.getValue(node, "__MAX_ROWS__");
+	int maxRows = 0;
+	if (maxRowsStr != null && maxRowsStr.isEmpty() == false) {
+		maxRows = Integer.parseInt(maxRowsStr);
+	}
+    boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+%>
+    
+	   countLines_<%=cid%>++;
+<%  if (maxRows > 0) { %>
+       if (countLines_<%=cid%> >= <%=maxRows%>) {
+           break;
+       }
+<%  } %>
+	} // close while from output connection of <%=cid%>
+	int <%=cid%>_totalAffectedRows = 0;
+	boolean <%=cid%>_isSampled = false;
+	try {
+		<%=cid%>_totalAffectedRows = <%=cid%>.getTotalAffectedRows();
+		<%=cid%>_isSampled = <%=cid%>.containsSampledData();
+	} catch (Exception e) {
+<%  if (dieOnError) { %>
+		throw e;
+<%  } %>		
+	}
+	globalMap.put("<%=cid%>_NB_LINE", countLines_<%=cid%>);
+	globalMap.put("<%=cid%>_TOTAL_AFFECTED_ROWS", <%=cid%>_totalAffectedRows);
+	globalMap.put("<%=cid%>_CONTAINS_SAMPLED_DATA", <%=cid%>_isSampled);
+	if (<%=cid%>_isSampled) {
+		globalMap.put("<%=cid%>_SAMPLE_SIZE", <%=cid%>.getSampleSize());
+		globalMap.put("<%=cid%>_SAMPLE_SPACE", <%=cid%>.getSampleSpace());
+	} else {
+		globalMap.remove("<%=cid%>_SAMPLE_SIZE");
+		globalMap.remove("<%=cid%>_SAMPLE_SPACE");
+	}
+	

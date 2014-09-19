@@ -1,0 +1,218 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
+		org.talend.core.model.metadata.types.JavaType
+		java.util.List 
+    	java.util.Map		
+	" 
+%>
+<% 
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode) codeGenArgument.getArgument();
+    String cid = node.getUniqueName();
+    String profileId = ElementParameterParser.getValue(node, "__PROFILE_ID__");
+    String applicationName = ElementParameterParser.getValue(node, "__APPLICATION_NAME__");
+	String accountEmail = ElementParameterParser.getValue(node, "__SERVICE_ACCOUNT_EMAIL__");
+	String keyFile = ElementParameterParser.getValue(node, "__KEY_FILE__");
+	String startDate = ElementParameterParser.getValue(node, "__START_DATE__");
+	String endDate = ElementParameterParser.getValue(node, "__END_DATE__");
+	String dimensions = ElementParameterParser.getValue(node, "__DIMENSIONS__");
+	String metrics = ElementParameterParser.getValue(node, "__METRICS__");
+	String filters = ElementParameterParser.getValue(node, "__FILTERS__");
+	String segmentId = ElementParameterParser.getValue(node, "__SEGMENT_ID__");
+	String sorts = ElementParameterParser.getValue(node, "__SORTS__");
+	String samplingLevel = ElementParameterParser.getValue(node, "__SAMPLING_LEVEL__");
+	String timeout = ElementParameterParser.getValue(node, "__TIMEOUT_IN_SEC__");
+	String timeOffset = ElementParameterParser.getValue(node, "__TIME_OFFSET__");
+	String fetchSize = ElementParameterParser.getValue(node, "__FETCH_SIZE__");
+	String numberFormatLocale = ElementParameterParser.getValue(node, "__NUMBERFORMAT_LOCALE__");
+	if (numberFormatLocale != null && numberFormatLocale.isEmpty() == false) {
+		numberFormatLocale = "\"" + numberFormatLocale + "\"";
+	} else {
+		numberFormatLocale = "null";
+	}
+	boolean deliverTotalsDataset = "true".equals(ElementParameterParser.getValue(node, "__DELIVER_TOTALS_DATASET__"));
+	String keepClient = ElementParameterParser.getValue(node, "__KEEP_CLIENT__");
+	String keepClientName = ElementParameterParser.getValue(node, "__KEEP_CLIENT_KEY__");
+	keepClientName = keepClientName != null && keepClientName.isEmpty() == false ? keepClientName : "\"\"";
+    List<IMetadataColumn> listColumns = null;
+    IConnection conn = null;
+    if (node.getOutgoingConnections().size() > 0) {
+        conn = node.getOutgoingConnections().get(0);
+        IMetadataTable metadata = conn.getMetadataTable();
+        listColumns = metadata.getListColumns();
+    }
+    boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+    boolean useServiceAccount = "true".equals(ElementParameterParser.getValue(node, "__USE_SERVICE_ACCOUNT__"));
+    String clientSecretFile = ElementParameterParser.getValue(node, "__CLIENT_SECRET_FILE__");
+    String userEmail = ElementParameterParser.getValue(node, "__USER_ACCOUNT_EMAIL__");
+%>
+    // start creating client
+<% if ("true".equals(keepClient)) {%>
+	de.cimt.talendcomp.googleanalytics.GoogleAnalyticsInput <%=cid%> = de.cimt.talendcomp.googleanalytics.GoogleAnalyticsInput.getFromCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName);
+	if (<%=cid%> == null) {
+		<%=cid%> = new de.cimt.talendcomp.googleanalytics.GoogleAnalyticsInput();
+<% } else {%>
+	de.cimt.talendcomp.googleanalytics.GoogleAnalyticsInput <%=cid%> = new de.cimt.talendcomp.googleanalytics.GoogleAnalyticsInput();
+<% }%>
+<% if (applicationName != null && applicationName.trim().isEmpty() == false) {%>
+		<%=cid%>.setApplicationName(<%=applicationName%>);
+<% }%>
+<%  if (useServiceAccount) { %>
+        // setup credentials with service account
+		<%=cid%>.setAccountEmail(<%=accountEmail%>);
+		<%=cid%>.setKeyFile(<%=keyFile%>);
+<% } else { %>
+		<%=cid%>.setAccountEmail(<%=userEmail%>);
+		<%=cid%>.setClientSecretFile(<%=clientSecretFile%>);
+<% } %> 
+<% if (timeout != null && timeout.trim().isEmpty() == false) {%>
+		<%=cid%>.setTimeoutInSeconds(<%=timeout%>);
+<% }%>
+<% if (timeOffset != null && timeOffset.trim().isEmpty() == false) {%>
+		<%=cid%>.setTimeOffsetMillisToPast(<%=timeOffset%>);
+<% }%>
+<% if (fetchSize != null && fetchSize.trim().isEmpty() == false) {%>
+		<%=cid%>.setFetchSize(<%=fetchSize%>);
+<% }%>
+        <%=cid%>.deliverTotalsDataset(<%=deliverTotalsDataset%>);
+		try {
+		    // initialize client with private key
+			<%=cid%>.initializeAnalyticsClient();
+		} catch (Exception e) {
+			globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+<% if (dieOnError) { %>
+			throw e;
+<% } else { %>
+			e.printStackTrace();
+<% } %>	
+			}
+		globalMap.put("<%=cid%>", <%=cid%>);
+<% if ("true".equals(keepClient)) {%>
+		de.cimt.talendcomp.googleanalytics.GoogleAnalyticsInput.putIntoCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName, <%=cid%>);
+	}
+<% }%>
+	// setup query
+	<%=cid%>.setProfileId(<%=profileId%>);
+	<%=cid%>.setStartDate(<%=startDate%>);
+	// for selecting data for one day, set end date == start date
+	<%=cid%>.setEndDate(<%=endDate%>);
+<% if (dimensions != null && dimensions.trim().isEmpty() == false) {%>
+	<%=cid%>.setDimensions(<%=dimensions%>);
+<% }%>
+	<%=cid%>.setMetrics(<%=metrics%>);
+<% if (filters != null && filters.trim().isEmpty() == false) {%>
+	<%=cid%>.setFilters(<%=filters%>);
+<% }%>
+<% if (segmentId != null && segmentId.trim().isEmpty() == false) {%>
+	<%=cid%>.setSegmentId(<%=segmentId%>);
+<% }%>
+<% if (sorts != null && sorts.trim().isEmpty() == false) {%>
+	<%=cid%>.setSorts(<%=sorts%>);
+<% }%>
+<% if (samplingLevel != null && samplingLevel.trim().isEmpty() == false) { %>
+	<%=cid%>.setSamplingLevel("<%=samplingLevel%>");
+<% } %>
+	// fire query and fetch first chunk of data
+	try {
+	    // checks also the correctness of result columns
+		<%=cid%>.executeQuery();
+	} catch (Exception e) {
+		globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+<% if (dieOnError) { %>
+		throw e;
+<% } else { %>
+		e.printStackTrace();
+<% } %>	
+	}
+	// iterate through the data...
+	int countLines_<%=cid%> = 0;
+	boolean warningAboutSchemaMismatchDone = false;
+	while (true) {
+	    try {
+		    // hasNextDataset() executes a new query if needed
+		    if (<%=cid%>.hasNextDataset() == false) {
+		    	break;
+		    }
+	    } catch (Exception e) {
+			globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+<% if (dieOnError) { %>
+			throw e;
+<% } else { %>
+			break;
+<% } %>	
+	    }
+	    // next row from results
+		java.util.List<String> dataset_<%=cid%> = <%=cid%>.getNextDataset();
+		// create a new row, thats avoid the need of setting attributes to null
+		<%=conn.getName()%> = new <%=conn.getName()%>Struct();
+<%	int index = 0;
+    if (listColumns != null && conn != null) {
+        for (IMetadataColumn col : listColumns) {
+        String javaClassName = JavaTypesManager.getJavaTypeFromId(col.getTalendType()).getNullableClass().getName(); %>
+		// fill schema field <%=col.getLabel()%>
+		if (dataset_<%=cid%>.size() > <%=index%>) {
+			String <%=cid%>_value_<%=index%> = dataset_<%=cid%>.get(<%=index%>);
+			if (<%=cid%>_value_<%=index%> != null) {
+<%          if (deliverTotalsDataset) {
+		        if ("java.util.Date".equals(javaClassName)) { %>
+				if (countLines_<%=cid%> == 0) {
+				    // we cannot set a date value for the totals row
+					<%=conn.getName()%>.<%=col.getLabel()%> = null;
+				} else {
+<%              if ("java.lang.String".equals(javaClassName)) { %>
+					<%=conn.getName()%>.<%=col.getLabel()%> = <%=cid%>_value_<%=index%>;
+<%              } else { %>
+	    	        try {
+						<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.cimt.talendcomp.googleanalytics.Util.convertToDatatype(
+								<%=cid%>_value_<%=index%>, 
+								"<%=col.getTalendType().substring(3)%>", 
+								<%=((col.getPattern() != null && col.getPattern().isEmpty() == false) ? col.getPattern() : numberFormatLocale)%>);
+					} catch (Exception e) {
+						throw new Exception("Convert field: <%=conn.getName()%>.<%=col.getLabel()%> value=[" + <%=cid%>_value_<%=index%> + "] countLines=" + countLines_<%=cid%> + " failed:" + e.getMessage(), e);		
+					}
+<%              } %>                
+				}
+<%              } else {
+                    if ("java.lang.String".equals(javaClassName)) { %>
+				<%=conn.getName()%>.<%=col.getLabel()%> = <%=cid%>_value_<%=index%>;
+<%                  } else { %>
+    	        try {
+					<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.cimt.talendcomp.googleanalytics.Util.convertToDatatype(
+							<%=cid%>_value_<%=index%>, 
+							"<%=col.getTalendType().substring(3)%>", 
+							<%=((col.getPattern() != null && col.getPattern().isEmpty() == false) ? col.getPattern() : numberFormatLocale)%>);
+				} catch (Exception e) {
+					throw new Exception("Convert field: <%=conn.getName()%>.<%=col.getLabel()%> value=[" + <%=cid%>_value_<%=index%> + "] countLines=" + countLines_<%=cid%> + " failed:" + e.getMessage(), e);		
+				}
+<%                  } %>                
+<%              } %>
+<%          } else {
+                if ("java.lang.String".equals(javaClassName)) { %>
+				<%=conn.getName()%>.<%=col.getLabel()%> = <%=cid%>_value_<%=index%>;
+<%              } else { %>
+    	        try {
+					<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.cimt.talendcomp.googleanalytics.Util.convertToDatatype(
+							<%=cid%>_value_<%=index%>, 
+							"<%=col.getTalendType().substring(3)%>", 
+							<%=((col.getPattern() != null && col.getPattern().isEmpty() == false) ? col.getPattern() : numberFormatLocale)%>);
+				} catch (Exception e) {
+					throw new Exception("Convert field: <%=conn.getName()%>.<%=col.getLabel()%> value=[" + <%=cid%>_value_<%=index%> + "] countLines=" + countLines_<%=cid%> + " failed:" + e.getMessage(), e);		
+				}
+<%              } %>                
+<%          } %>
+			}
+		} else if (warningAboutSchemaMismatchDone == false) {
+			warningAboutSchemaMismatchDone = true;
+			System.err.println("Warning, the schema contains more columns than the ga result provides (current index=<%=index%>). Please check this!");
+		}
+<%      index++;%>
+<%      } %>
+<%  } %>
