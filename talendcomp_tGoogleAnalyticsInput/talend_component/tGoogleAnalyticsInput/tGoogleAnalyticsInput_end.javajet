@@ -2,15 +2,7 @@
 	imports="
 		org.talend.core.model.process.INode 
 		org.talend.core.model.process.ElementParameterParser 
-		org.talend.core.model.metadata.IMetadataTable 
-		org.talend.core.model.metadata.IMetadataColumn 
-		org.talend.core.model.process.IConnection
-		org.talend.core.model.process.IConnectionCategory
 		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.metadata.types.JavaTypesManager
-		org.talend.core.model.metadata.types.JavaType
-		java.util.List 
-    	java.util.Map		
 	" 
 %>
 <% 
@@ -23,14 +15,20 @@
 		maxRows = Integer.parseInt(maxRowsStr);
 	}
     boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+	boolean normalizedFlows = "true".equals(ElementParameterParser.getValue(node, "__NORMALIZED_OUTPUT__"));
 %>
-    
+<% if (normalizedFlows) { %>
+	countDimensionValues_<%=cid%>++;
+	countMetricValues_<%=cid%>++;
+	 	
+<% } else { %>	
 	   countLines_<%=cid%>++;
 <%  if (maxRows > 0) { %>
        if (countLines_<%=cid%> >= <%=maxRows%>) {
            break;
        }
 <%  } %>
+<% } %>    
 	} // close while from output connection of <%=cid%>
 	int <%=cid%>_totalAffectedRows = 0;
 	boolean <%=cid%>_isSampled = false;
@@ -42,7 +40,12 @@
 		throw e;
 <%  } %>		
 	}
+<% if (normalizedFlows) { %>
+	globalMap.put("<%=cid%>_NB_LINE_DIMENSIONS", countDimensionValues_<%=cid%>);
+	globalMap.put("<%=cid%>_NB_LINE_METRICS", countMetricValues_<%=cid%>);
+<% } else { %>	
 	globalMap.put("<%=cid%>_NB_LINE", countLines_<%=cid%>);
+<% } %>    
 	globalMap.put("<%=cid%>_TOTAL_AFFECTED_ROWS", <%=cid%>_totalAffectedRows);
 	globalMap.put("<%=cid%>_CONTAINS_SAMPLED_DATA", <%=cid%>_isSampled);
 	if (<%=cid%>_isSampled) {
