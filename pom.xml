@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>TalendComp</groupId>
-  <artifactId>cimt.talendcomp.gaanalytics</artifactId>
+  <artifactId>jlo.talendcomp.gaanalytics</artifactId>
   <name>GoogleAnalytics Talend Component</name>
   <repositories>
     <repository>
@@ -27,7 +27,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <project.api.version>v3-rev100-1.19.0</project.api.version>
+    <project.api.version>v3-rev102-1.19.0</project.api.version>
     <project.http.version>1.19.0</project.http.version>
     <project.oauth.version>1.19.0</project.oauth.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -74,5 +74,5 @@
       </plugin>
     </plugins>
   </build>
-  <version>2.1</version>
+  <version>3.0</version>
 </project>

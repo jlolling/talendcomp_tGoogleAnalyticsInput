@@ -5,12 +5,9 @@
 		org.talend.core.model.metadata.IMetadataTable 
 		org.talend.core.model.metadata.IMetadataColumn 
 		org.talend.core.model.process.IConnection
-		org.talend.core.model.process.IConnectionCategory
 		org.talend.designer.codegen.config.CodeGeneratorArgument
 		org.talend.core.model.metadata.types.JavaTypesManager
-		org.talend.core.model.metadata.types.JavaType
-		java.util.List 
-    	java.util.Map		
+		java.util.List
 	" 
 %>
 <% 
@@ -38,29 +35,46 @@
 	} else {
 		numberFormatLocale = "null";
 	}
+    boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+    boolean useServiceAccount = "true".equals(ElementParameterParser.getValue(node, "__USE_SERVICE_ACCOUNT__"));
+    String clientSecretFile = ElementParameterParser.getValue(node, "__CLIENT_SECRET_FILE__");
+    String userEmail = ElementParameterParser.getValue(node, "__USER_ACCOUNT_EMAIL__");
 	boolean deliverTotalsDataset = "true".equals(ElementParameterParser.getValue(node, "__DELIVER_TOTALS_DATASET__"));
 	String keepClient = ElementParameterParser.getValue(node, "__KEEP_CLIENT__");
 	String keepClientName = ElementParameterParser.getValue(node, "__KEEP_CLIENT_KEY__");
 	keepClientName = keepClientName != null && keepClientName.isEmpty() == false ? keepClientName : "\"\"";
     List<IMetadataColumn> listColumns = null;
     IConnection conn = null;
-    if (node.getOutgoingConnections().size() > 0) {
-        conn = node.getOutgoingConnections().get(0);
-        IMetadataTable metadata = conn.getMetadataTable();
-        listColumns = metadata.getListColumns();
+    IConnection connDimensions = null;
+    IConnection connMetrics = null;
+	boolean normalizedFlows = "true".equals(ElementParameterParser.getValue(node, "__NORMALIZED_OUTPUT__"));
+    if (node.getOutgoingConnections() != null && node.getOutgoingConnections().size() > 0) {
+    	if (normalizedFlows) {
+		    List<? extends IConnection> connsDimensions = node.getOutgoingConnections("DIMENSION_VALUES");
+		    if (connsDimensions != null && connsDimensions.size() > 0) {
+		    	connDimensions = connsDimensions.get(0);
+		    }
+		    List<? extends IConnection> connsMetrics = node.getOutgoingConnections("METRIC_VALUES");
+		    if (connsMetrics != null && connsMetrics.size() > 0) {
+		    	connMetrics = connsMetrics.get(0);
+		    }
+    	} else {
+		    List<? extends IConnection> connsPlain = node.getOutgoingConnections("SCHEMA");
+		    if (connsPlain != null && connsPlain.size() > 0) {
+		    	conn = connsPlain.get(0);
+		        IMetadataTable metadata = conn.getMetadataTable();
+		        listColumns = metadata.getListColumns();
+		    }
+    	}
     }
-    boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
-    boolean useServiceAccount = "true".equals(ElementParameterParser.getValue(node, "__USE_SERVICE_ACCOUNT__"));
-    String clientSecretFile = ElementParameterParser.getValue(node, "__CLIENT_SECRET_FILE__");
-    String userEmail = ElementParameterParser.getValue(node, "__USER_ACCOUNT_EMAIL__");
 %>
     // start creating client
 <% if ("true".equals(keepClient)) {%>
-	de.cimt.talendcomp.googleanalytics.GoogleAnalyticsInput <%=cid%> = de.cimt.talendcomp.googleanalytics.GoogleAnalyticsInput.getFromCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName);
+	de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput <%=cid%> = de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput.getFromCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName);
 	if (<%=cid%> == null) {
-		<%=cid%> = new de.cimt.talendcomp.googleanalytics.GoogleAnalyticsInput();
+		<%=cid%> = new de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput();
 <% } else {%>
-	de.cimt.talendcomp.googleanalytics.GoogleAnalyticsInput <%=cid%> = new de.cimt.talendcomp.googleanalytics.GoogleAnalyticsInput();
+	de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput <%=cid%> = new de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput();
 <% }%>
 <% if (applicationName != null && applicationName.trim().isEmpty() == false) {%>
 		<%=cid%>.setApplicationName(<%=applicationName%>);
@@ -96,7 +110,7 @@
 			}
 		globalMap.put("<%=cid%>", <%=cid%>);
 <% if ("true".equals(keepClient)) {%>
-		de.cimt.talendcomp.googleanalytics.GoogleAnalyticsInput.putIntoCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName, <%=cid%>);
+		de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput.putIntoCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName, <%=cid%>);
 	}
 <% }%>
 	// setup query
@@ -133,12 +147,55 @@
 <% } %>	
 	}
 	// iterate through the data...
+<% if (normalizedFlows) { %>
+	// deliver the output in 2 normalized flows for dimensions and metrics
+	int countDimensionValues_<%=cid%> = 0;
+	int countMetricValues_<%=cid%> = 0;
+	while (true) {
+		try {
+			// next calls the necessary calls to hasNextPlainRecord()
+			if (<%=cid%>.nextNormalizedRecord() == false) {
+				break;
+			}
+		} catch (Exception e) {
+			globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+<% if (dieOnError) { %>
+			throw e;
+<% } else { %>
+			break;
+<% } %>	
+	    }
+<%	 if (connDimensions != null) { %> 
+		de.jlo.talendcomp.googleanalytics.DimensionValue dv = <%=cid%>.getCurrentDimensionValue();
+		if (dv != null) {
+			<%=connDimensions.getName()%> = new <%=connDimensions.getName()%>Struct();
+			<%=connDimensions.getName()%>.ROW_NUM = dv.rowNum;
+			<%=connDimensions.getName()%>.DIMENSION_NAME = dv.name;
+			<%=connDimensions.getName()%>.DIMENSION_VALUE = dv.value;
+		} else {
+			<%=connDimensions.getName()%> = null;
+		}
+<%   } %>
+<%   if (connMetrics != null) { %>
+		de.jlo.talendcomp.googleanalytics.MetricValue mv = <%=cid%>.getCurrentMetricValue();
+		if (mv != null) {
+		    <%=connMetrics.getName()%> = new <%=connMetrics.getName()%>Struct();
+			<%=connMetrics.getName()%>.ROW_NUM = mv.rowNum;
+			<%=connMetrics.getName()%>.METRIC_NAME = mv.name;
+			<%=connMetrics.getName()%>.METRIC_VALUE = mv.value;
+		} else {
+			<%=connMetrics.getName()%> = null;
+		}
+<%   } %>
+<% } else { %>	
 	int countLines_<%=cid%> = 0;
+	// deliver the output as plain flow
+	// with dimension and metrics as columns
 	boolean warningAboutSchemaMismatchDone = false;
 	while (true) {
 	    try {
-		    // hasNextDataset() executes a new query if needed
-		    if (<%=cid%>.hasNextDataset() == false) {
+		    // hasNextPlainRecord() executes a new query if needed
+		    if (<%=cid%>.hasNextPlainRecord() == false) {
 		    	break;
 		    }
 	    } catch (Exception e) {
@@ -150,9 +207,11 @@
 <% } %>	
 	    }
 	    // next row from results
-		java.util.List<String> dataset_<%=cid%> = <%=cid%>.getNextDataset();
+		java.util.List<String> dataset_<%=cid%> = <%=cid%>.getNextPlainRecord();
+<%  if (conn != null) { %>
 		// create a new row, thats avoid the need of setting attributes to null
 		<%=conn.getName()%> = new <%=conn.getName()%>Struct();
+<%  } %>
 <%	int index = 0;
     if (listColumns != null && conn != null) {
         for (IMetadataColumn col : listColumns) {
@@ -171,7 +230,7 @@
 					<%=conn.getName()%>.<%=col.getLabel()%> = <%=cid%>_value_<%=index%>;
 <%              } else { %>
 	    	        try {
-						<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.cimt.talendcomp.googleanalytics.Util.convertToDatatype(
+						<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.jlo.talendcomp.googleanalytics.Util.convertToDatatype(
 								<%=cid%>_value_<%=index%>, 
 								"<%=col.getTalendType().substring(3)%>", 
 								<%=((col.getPattern() != null && col.getPattern().isEmpty() == false) ? col.getPattern() : numberFormatLocale)%>);
@@ -185,7 +244,7 @@
 				<%=conn.getName()%>.<%=col.getLabel()%> = <%=cid%>_value_<%=index%>;
 <%                  } else { %>
     	        try {
-					<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.cimt.talendcomp.googleanalytics.Util.convertToDatatype(
+					<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.jlo.talendcomp.googleanalytics.Util.convertToDatatype(
 							<%=cid%>_value_<%=index%>, 
 							"<%=col.getTalendType().substring(3)%>", 
 							<%=((col.getPattern() != null && col.getPattern().isEmpty() == false) ? col.getPattern() : numberFormatLocale)%>);
@@ -199,7 +258,7 @@
 				<%=conn.getName()%>.<%=col.getLabel()%> = <%=cid%>_value_<%=index%>;
 <%              } else { %>
     	        try {
-					<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.cimt.talendcomp.googleanalytics.Util.convertToDatatype(
+					<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.jlo.talendcomp.googleanalytics.Util.convertToDatatype(
 							<%=cid%>_value_<%=index%>, 
 							"<%=col.getTalendType().substring(3)%>", 
 							<%=((col.getPattern() != null && col.getPattern().isEmpty() == false) ? col.getPattern() : numberFormatLocale)%>);
@@ -216,3 +275,4 @@
 <%      index++;%>
 <%      } %>
 <%  } %>
+<%  } // if (normalizedFlows... %>
