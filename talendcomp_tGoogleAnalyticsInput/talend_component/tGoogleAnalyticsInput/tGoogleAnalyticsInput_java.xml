@@ -150,7 +150,7 @@
 	<CODEGENERATION>
 		<IMPORTS>
 			<IMPORT NAME="Google Analytics"
-				MODULE="jlo.talendcomp.gaanalytics-3.0-jar-with-dependencies.jar"
+				MODULE="jlo.talendcomp.gaanalytics-3.1-jar-with-dependencies.jar"
 				REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>
