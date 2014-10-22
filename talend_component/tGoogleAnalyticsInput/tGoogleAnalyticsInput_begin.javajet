@@ -59,7 +59,7 @@
 		    	connMetrics = connsMetrics.get(0);
 		    }
     	} else {
-		    List<? extends IConnection> connsPlain = node.getOutgoingConnections("SCHEMA");
+		    List<? extends IConnection> connsPlain = node.getOutgoingConnections();
 		    if (connsPlain != null && connsPlain.size() > 0) {
 		    	conn = connsPlain.get(0);
 		        IMetadataTable metadata = conn.getMetadataTable();
