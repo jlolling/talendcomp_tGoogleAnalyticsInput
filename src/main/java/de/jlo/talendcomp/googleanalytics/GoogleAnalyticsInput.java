@@ -51,7 +51,7 @@ public class GoogleAnalyticsInput {
 	private String dimensions = null;
 	private String sorts = null;
 	private String filters = null;
-	private String segmentId = null;
+	private String segment = null;
 	private String profileId;
 	private int fetchSize = 0;
 	private int timeoutInSeconds = 120;
@@ -71,10 +71,6 @@ public class GoogleAnalyticsInput {
 	private boolean addTotalsRecord = false;
 	private boolean totalsDelivered = false;
 	private long timeMillisOffsetToPast = 10000;
-	private String proxyHost;
-	private String proxyPort;
-	private String proxyUser;
-	private String proxyPassword;
 	public static final String SAMPLING_LEVEL_DEFAULT = "DEFAULT";
 	public static final String SAMPLING_LEVEL_FASTER = "FASTER";
 	public static final String SAMPLING_LEVEL_HIGHER_PRECISION = "HIGHER_PRECISION";
@@ -105,6 +101,13 @@ public class GoogleAnalyticsInput {
 
 	public void setProfileId(int profileId) {
 		this.profileId = String.valueOf(profileId);
+	}
+
+	public void setProfileId(Long profileId) {
+		if (profileId == null) {
+			throw new IllegalArgumentException("profileId cannot be null.");
+		}
+		this.profileId = Long.toString(profileId);
 	}
 
 	public void setApplicationName(String applicationName) {
@@ -162,8 +165,8 @@ public class GoogleAnalyticsInput {
 		this.filters = filters;
 	}
 
-	public void setSegmentId(String segmentId) {
-		this.segmentId = segmentId;
+	public void setSegment(String segment) {
+		this.segment = segment;
 	}
 
 	public void setKeyFile(String file) {
@@ -287,6 +290,8 @@ public class GoogleAnalyticsInput {
 			.setApplicationName(applicationName)
 			.build();
 	}
+	
+	
 
 	private void executeDataQuery() throws Exception {
 		gaData = null;
@@ -324,8 +329,8 @@ public class GoogleAnalyticsInput {
 		if (fetchSize > 0) {
 			getRequest.setMaxResults(fetchSize);
 		}
-		if (segmentId != null && segmentId.trim().isEmpty() == false) {
-			getRequest.setSegment(segmentId.trim());
+		if (segment != null && segment.trim().isEmpty() == false) {
+			getRequest.setSegment(segment.trim());
 		}
 		if (samplingLevel != null) {
 			getRequest.setSamplingLevel(samplingLevel);
@@ -386,7 +391,7 @@ public class GoogleAnalyticsInput {
 			}
 		}
 	}
-
+	
 	public void executeQuery() throws Exception {
 		executeDataQuery();
 		checkColumns();
@@ -635,54 +640,6 @@ public class GoogleAnalyticsInput {
 		this.timeMillisOffsetToPast = timeMillisOffsetToPast;
 	}
 
-	public String getProxyHost() {
-		return proxyHost;
-	}
-
-	public void setProxyHost(String proxyHost) {
-		if (proxyHost != null && proxyHost.trim().isEmpty() == false) {
-			this.proxyHost = proxyHost.trim();
-		} else {
-			this.proxyHost = null;
-		}
-	}
-
-	public String getProxyPort() {
-		return proxyPort;
-	}
-
-	public void setProxyPort(String proxyPort) {
-		if (proxyPort != null && proxyPort.trim().isEmpty() == false) {
-			this.proxyPort = proxyPort.trim();
-		} else {
-			this.proxyPort = null;
-		}
-	}
-
-	public String getProxyUser() {
-		return proxyUser;
-	}
-
-	public void setProxyUser(String proxyUser) {
-		if (proxyUser != null && proxyUser.trim().isEmpty() == false) {
-			this.proxyUser = proxyUser.trim();
-		} else {
-			this.proxyUser = null;
-		}
-	}
-
-	public String getProxyPassword() {
-		return proxyPassword;
-	}
-
-	public void setProxyPassword(String proxyPassword) {
-		if (proxyPassword != null && proxyPassword.trim().isEmpty() == false) {
-			this.proxyPassword = proxyPassword.trim();
-		} else {
-			this.proxyPassword = null;
-		}
-	}
-
 	public String getSamplingLevel() {
 		return samplingLevel;
 	}
@@ -700,12 +657,19 @@ public class GoogleAnalyticsInput {
 	public void setClientSecretFile(String clientSecretFile) {
 		if (clientSecretFile != null && clientSecretFile.trim().isEmpty() == false) {
 			this.clientSecretFile = clientSecretFile;
-			useServiceAccount = false;
 		}
 	}
 
 	public String getCredentialDataStoreDir() {
 		return credentialDataStoreDir;
+	}
+
+	public boolean isUseServiceAccount() {
+		return useServiceAccount;
+	}
+
+	public void setUseServiceAccount(boolean useServiceAccount) {
+		this.useServiceAccount = useServiceAccount;
 	}
 
 }
