@@ -14,16 +14,19 @@
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode) codeGenArgument.getArgument();
     String cid = node.getUniqueName();
-    String profileId = ElementParameterParser.getValue(node, "__PROFILE_ID__");
     String applicationName = ElementParameterParser.getValue(node, "__APPLICATION_NAME__");
+    boolean useServiceAccount = "SERVICE_ACCOUNT".equals(ElementParameterParser.getValue(node, "__AUTHENTICATION_METHOD__"));
 	String accountEmail = ElementParameterParser.getValue(node, "__SERVICE_ACCOUNT_EMAIL__");
 	String keyFile = ElementParameterParser.getValue(node, "__KEY_FILE__");
+    String clientSecretFile = ElementParameterParser.getValue(node, "__CLIENT_SECRET_FILE__");
+    String userEmail = ElementParameterParser.getValue(node, "__USER_ACCOUNT_EMAIL__");
+    String profileId = ElementParameterParser.getValue(node, "__PROFILE_ID__");
 	String startDate = ElementParameterParser.getValue(node, "__START_DATE__");
 	String endDate = ElementParameterParser.getValue(node, "__END_DATE__");
 	String dimensions = ElementParameterParser.getValue(node, "__DIMENSIONS__");
 	String metrics = ElementParameterParser.getValue(node, "__METRICS__");
 	String filters = ElementParameterParser.getValue(node, "__FILTERS__");
-	String segmentId = ElementParameterParser.getValue(node, "__SEGMENT_ID__");
+	String segment = ElementParameterParser.getValue(node, "__SEGMENT__");
 	String sorts = ElementParameterParser.getValue(node, "__SORTS__");
 	String samplingLevel = ElementParameterParser.getValue(node, "__SAMPLING_LEVEL__");
 	String timeout = ElementParameterParser.getValue(node, "__TIMEOUT_IN_SEC__");
@@ -36,9 +39,6 @@
 		numberFormatLocale = "null";
 	}
     boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
-    boolean useServiceAccount = "true".equals(ElementParameterParser.getValue(node, "__USE_SERVICE_ACCOUNT__"));
-    String clientSecretFile = ElementParameterParser.getValue(node, "__CLIENT_SECRET_FILE__");
-    String userEmail = ElementParameterParser.getValue(node, "__USER_ACCOUNT_EMAIL__");
 	boolean deliverTotalsDataset = "true".equals(ElementParameterParser.getValue(node, "__DELIVER_TOTALS_DATASET__"));
 	String keepClient = ElementParameterParser.getValue(node, "__KEEP_CLIENT__");
 	String keepClientName = ElementParameterParser.getValue(node, "__KEEP_CLIENT_KEY__");
@@ -79,11 +79,13 @@
 <% if (applicationName != null && applicationName.trim().isEmpty() == false) {%>
 		<%=cid%>.setApplicationName(<%=applicationName%>);
 <% }%>
+    <%=cid%>.setUseServiceAccount(<%=useServiceAccount%>);
 <%  if (useServiceAccount) { %>
         // setup credentials with service account
 		<%=cid%>.setAccountEmail(<%=accountEmail%>);
 		<%=cid%>.setKeyFile(<%=keyFile%>);
 <% } else { %>
+      // setup with Client ID for native application
 		<%=cid%>.setAccountEmail(<%=userEmail%>);
 		<%=cid%>.setClientSecretFile(<%=clientSecretFile%>);
 <% } %> 
@@ -125,8 +127,8 @@
 <% if (filters != null && filters.trim().isEmpty() == false) {%>
 	<%=cid%>.setFilters(<%=filters%>);
 <% }%>
-<% if (segmentId != null && segmentId.trim().isEmpty() == false) {%>
-	<%=cid%>.setSegmentId(<%=segmentId%>);
+<% if (segment != null && segment.trim().isEmpty() == false) {%>
+	<%=cid%>.setSegment(<%=segment%>);
 <% }%>
 <% if (sorts != null && sorts.trim().isEmpty() == false) {%>
 	<%=cid%>.setSorts(<%=sorts%>);
@@ -172,6 +174,7 @@
 			<%=connDimensions.getName()%>.ROW_NUM = dv.rowNum;
 			<%=connDimensions.getName()%>.DIMENSION_NAME = dv.name;
 			<%=connDimensions.getName()%>.DIMENSION_VALUE = dv.value;
+			countDimensionValues_<%=cid%>++;
 		} else {
 			<%=connDimensions.getName()%> = null;
 		}
@@ -183,6 +186,7 @@
 			<%=connMetrics.getName()%>.ROW_NUM = mv.rowNum;
 			<%=connMetrics.getName()%>.METRIC_NAME = mv.name;
 			<%=connMetrics.getName()%>.METRIC_VALUE = mv.value;
+			countMetricValues_<%=cid%>++;
 		} else {
 			<%=connMetrics.getName()%> = null;
 		}
@@ -208,6 +212,7 @@
 	    }
 	    // next row from results
 		java.util.List<String> dataset_<%=cid%> = <%=cid%>.getNextPlainRecord();
+	   countLines_<%=cid%>++;
 <%  if (conn != null) { %>
 		// create a new row, thats avoid the need of setting attributes to null
 		<%=conn.getName()%> = new <%=conn.getName()%>Struct();
