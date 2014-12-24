@@ -17,12 +17,7 @@
     boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
 	boolean normalizedFlows = "true".equals(ElementParameterParser.getValue(node, "__NORMALIZED_OUTPUT__"));
 %>
-<% if (normalizedFlows) { %>
-	countDimensionValues_<%=cid%>++;
-	countMetricValues_<%=cid%>++;
-	 	
-<% } else { %>	
-	   countLines_<%=cid%>++;
+<% if (normalizedFlows == false) { %>
 <%  if (maxRows > 0) { %>
        if (countLines_<%=cid%> >= <%=maxRows%>) {
            break;
