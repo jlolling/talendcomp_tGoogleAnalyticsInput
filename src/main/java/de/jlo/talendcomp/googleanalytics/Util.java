@@ -79,7 +79,7 @@ public class Util {
 	 * @return the resulting Date
 	 */
 	public static Date convertToDate(String dateString, String pattern) throws Exception {
-		if (dateString == null || dateString.trim().isEmpty()) {
+		if (dateString == null || dateString.trim().isEmpty() || dateString.equals("total")) {
 			return null;
 		}
 		if (pattern == null || pattern.isEmpty()) {

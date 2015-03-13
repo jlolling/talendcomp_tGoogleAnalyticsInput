@@ -48,6 +48,7 @@
     IConnection connDimensions = null;
     IConnection connMetrics = null;
 	boolean normalizedFlows = "true".equals(ElementParameterParser.getValue(node, "__NORMALIZED_OUTPUT__"));
+	boolean denormalizeDate = "true".equals(ElementParameterParser.getValue(node, "__DENORMALIZE_DATE__"));
     if (node.getOutgoingConnections() != null && node.getOutgoingConnections().size() > 0) {
     	if (normalizedFlows) {
 		    List<? extends IConnection> connsDimensions = node.getOutgoingConnections("DIMENSION_VALUES");
@@ -115,6 +116,7 @@
 		de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput.putIntoCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName, <%=cid%>);
 	}
 <% }%>
+    globalMap.put("<%=cid%>_ERROR_CODE", 0);
 	// setup query
 	<%=cid%>.setProfileId(<%=profileId%>);
 	<%=cid%>.setStartDate(<%=startDate%>);
@@ -142,6 +144,7 @@
 		<%=cid%>.executeQuery();
 	} catch (Exception e) {
 		globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+		globalMap.put("<%=cid%>_ERROR_CODE", <%=cid%>.getErrorCode());
 <% if (dieOnError) { %>
 		throw e;
 <% } else { %>
@@ -150,6 +153,7 @@
 	}
 	// iterate through the data...
 <% if (normalizedFlows) { %>
+   <%=cid%>.setExcludeDate(<%=denormalizeDate%>);
 	// deliver the output in 2 normalized flows for dimensions and metrics
 	int countDimensionValues_<%=cid%> = 0;
 	int countMetricValues_<%=cid%> = 0;
@@ -159,8 +163,12 @@
 			if (<%=cid%>.nextNormalizedRecord() == false) {
 				break;
 			}
+<% if (denormalizeDate) { %>
+	      globalMap.put("<%=cid%>_CURRENT_DATE", <%=cid%>.getCurrentDate());
+<% } %>
 		} catch (Exception e) {
-			globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+          globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+          globalMap.put("<%=cid%>_ERROR_CODE", <%=cid%>.getErrorCode());
 <% if (dieOnError) { %>
 			throw e;
 <% } else { %>
@@ -203,7 +211,8 @@
 		    	break;
 		    }
 	    } catch (Exception e) {
-			globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+         globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+         globalMap.put("<%=cid%>_ERROR_CODE", <%=cid%>.getErrorCode());
 <% if (dieOnError) { %>
 			throw e;
 <% } else { %>
