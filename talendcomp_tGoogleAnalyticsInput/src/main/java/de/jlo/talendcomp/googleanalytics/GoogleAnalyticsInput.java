@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -63,6 +65,9 @@ public class GoogleAnalyticsInput {
 	private List<List<String>> lastResultSet;
 	private List<DimensionValue> currentResultRowDimensionValues;
 	private List<MetricValue> currentResultRowMetricValues;
+	private Date currentDate;
+	private static final String DATE_DIME = "ga:date";
+	private boolean excludeDate = false;
 	private List<String> requestedColumnNames = new ArrayList<String>();
 	private List<String> requestedDimensionNames = new ArrayList<String>();
 	private List<String> requestedMetricNames = new ArrayList<String>();
@@ -77,6 +82,9 @@ public class GoogleAnalyticsInput {
 	private String samplingLevel = SAMPLING_LEVEL_DEFAULT;
 	private boolean useServiceAccount = true;
 	private String credentialDataStoreDir = null;
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
+	private int errorCode = 0;
+	private boolean success = true;
 
 	public static void putIntoCache(String key, GoogleAnalyticsInput gai) {
 		clientCache.put(key, gai);
@@ -96,10 +104,16 @@ public class GoogleAnalyticsInput {
 	}
 
 	public void setProfileId(String profileId) {
+		if (profileId == null || profileId.trim().isEmpty()) {
+			throw new IllegalArgumentException("Profile-ID (View-ID) cannot be null or empty");
+		}
 		this.profileId = profileId;
 	}
 
 	public void setProfileId(int profileId) {
+		if (profileId == 0) {
+			throw new IllegalArgumentException("Profile-ID (View-ID) must be greater than 0");
+		}
 		this.profileId = String.valueOf(profileId);
 	}
 
@@ -114,6 +128,11 @@ public class GoogleAnalyticsInput {
 		this.applicationName = applicationName;
 	}
 
+	/**
+	 * for selecting data for one day: set start date == end date
+	 * Format: yyyy-MM-dd
+	 * @param yyyyMMdd
+	 */
 	public void setStartDate(String yyyyMMdd) {
 		this.startDate = yyyyMMdd;
 	}
@@ -124,7 +143,7 @@ public class GoogleAnalyticsInput {
 
 	/**
 	 * for selecting data for one day: set start date == end date
-	 * 
+	 * Format: yyyy-MM-dd
 	 * @param yyyyMMdd
 	 */
 	public void setEndDate(String yyyyMMdd) {
@@ -141,15 +160,26 @@ public class GoogleAnalyticsInput {
 	}
 
 	public void setMetrics(String metrics) {
-		this.metrics = metrics;
+		if (metrics == null || metrics.trim().isEmpty()) {
+			throw new IllegalArgumentException("Metrics cannot be null or empty");
+		}
+		this.metrics = metrics.trim();
 	}
 
 	public void setDimensions(String dimensions) {
-		this.dimensions = dimensions;
+		if (dimensions != null && dimensions.trim().isEmpty() == false) {
+			this.dimensions = dimensions.trim();
+		} else {
+			this.dimensions = null;
+		}
 	}
 
 	public void setSorts(String sorts) {
-		this.sorts = sorts;
+		if (sorts != null && sorts.trim().isEmpty() == false) {
+			this.sorts = sorts;
+		} else {
+			this.sorts = null;
+		}
 	}
 
 	/**
@@ -162,19 +192,33 @@ public class GoogleAnalyticsInput {
 	 * @param filters
 	 */
 	public void setFilters(String filters) {
-		this.filters = filters;
+		if (filters != null && filters.trim().isEmpty() == false) {
+			this.filters = filters.trim();
+		} else {
+			this.filters = null;
+		}
 	}
 
 	public void setSegment(String segment) {
-		this.segment = segment;
+		if (segment != null && segment.trim().isEmpty() == false) {
+			this.segment = segment;
+		} else {
+			this.segment = null;
+		}
 	}
 
 	public void setKeyFile(String file) {
-		keyFile = new File(file);
+		if (file == null || file.trim().isEmpty()) {
+			throw new IllegalArgumentException("Key file path cannot be null or empty");
+		}
+		keyFile = new File(file.trim());
 	}
 
 	public void setAccountEmail(String email) {
-		accountEmail = email;
+		if (email == null || email.trim().isEmpty()) {
+			throw new IllegalArgumentException("Email cannot be null or empty");
+		}
+		accountEmail = email.trim();
 	}
 
 	public void setTimeoutInSeconds(int timeoutInSeconds) {
@@ -275,7 +319,7 @@ public class GoogleAnalyticsInput {
 		} else {
 			credential = authorizeWithClientSecret();
 		}
-		// Set up and return Google Analytics API client.
+        // Set up and return Google Analytics API client.
 		analyticsClient = new Analytics.Builder(
 			HTTP_TRANSPORT, 
 			JSON_FACTORY, 
@@ -291,8 +335,6 @@ public class GoogleAnalyticsInput {
 			.build();
 	}
 	
-	
-
 	private void executeDataQuery() throws Exception {
 		gaData = null;
 		if (profileId == null || profileId.length() < 5) {
@@ -335,7 +377,17 @@ public class GoogleAnalyticsInput {
 		if (samplingLevel != null) {
 			getRequest.setSamplingLevel(samplingLevel);
 		}
-		gaData = getRequest.execute();
+		errorCode = 0;
+		try {
+			success = false;
+			gaData = getRequest.execute();
+			success = true;
+		} catch (Exception ge) {
+			if (ge instanceof HttpResponseException) {
+				errorCode = ((HttpResponseException) ge).getStatusCode();
+			}
+			throw ge;
+		}
 		lastResultSet = gaData.getRows();
 		if (lastResultSet == null) {
 			// fake an empty result set to avoid breaking further processing
@@ -421,7 +473,17 @@ public class GoogleAnalyticsInput {
 				&& (fetchSize == 0 || lastFetchedRowCount == fetchSize)) {
 			startIndex = startIndex + lastFetchedRowCount;
 			getRequest.setStartIndex(startIndex);
-			gaData = getRequest.execute();
+			errorCode = 0;
+			try {
+				success = false;
+				gaData = getRequest.execute();
+				success = true;
+			} catch (Exception ge) {
+				if (ge instanceof HttpResponseException) {
+					errorCode = ((HttpResponseException) ge).getStatusCode();
+				}
+				throw ge;
+			}
 			lastResultSet = gaData.getRows();
 			if (lastResultSet == null) {
 				lastResultSet = new ArrayList<List<String>>();
@@ -515,13 +577,24 @@ public class GoogleAnalyticsInput {
 	
 	private List<DimensionValue> buildDimensionValues(List<String> oneRow) {
 		int index = 0;
+		currentDate = null;
 		final List<DimensionValue> oneRowDimensionValues = new ArrayList<DimensionValue>();
 		for (; index < requestedDimensionNames.size(); index++) {
 			DimensionValue dm = new DimensionValue();
 			dm.name = requestedDimensionNames.get(index);
 			dm.value = oneRow.get(index);
 			dm.rowNum = currentPlainRowIndex;
-			oneRowDimensionValues.add(dm);
+        	if (excludeDate && DATE_DIME.equalsIgnoreCase(dm.name.trim().toLowerCase())) {
+        		try {
+        			if (dm.value != null) {
+    					currentDate = dateFormatter.parse(dm.value);
+        			}
+				} catch (ParseException e) {
+					currentDate = null;
+				}
+        	} else {
+    			oneRowDimensionValues.add(dm);
+        	}
 		}
 		currentResultRowDimensionValues = oneRowDimensionValues;
 		setMaxCountNormalizedValues(currentResultRowDimensionValues.size());
@@ -670,6 +743,22 @@ public class GoogleAnalyticsInput {
 
 	public void setUseServiceAccount(boolean useServiceAccount) {
 		this.useServiceAccount = useServiceAccount;
+	}
+
+	public Date getCurrentDate() throws ParseException {
+		return currentDate;
+	}
+
+	public void setExcludeDate(boolean excludeDate) {
+		this.excludeDate = excludeDate;
+	}
+
+	public int getErrorCode() {
+		return errorCode;
+	}
+
+	public boolean isSuccess() {
+		return success;
 	}
 
 }
