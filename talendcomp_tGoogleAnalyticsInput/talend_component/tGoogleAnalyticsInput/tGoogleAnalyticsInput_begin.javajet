@@ -32,6 +32,7 @@
 	String timeout = ElementParameterParser.getValue(node, "__TIMEOUT_IN_SEC__");
 	String timeOffset = ElementParameterParser.getValue(node, "__TIME_OFFSET__");
 	String fetchSize = ElementParameterParser.getValue(node, "__FETCH_SIZE__");
+	String maxAttempts = ElementParameterParser.getValue(node, "__MAX_ATTEMPTS__");
 	String numberFormatLocale = ElementParameterParser.getValue(node, "__NUMBERFORMAT_LOCALE__");
 	if (numberFormatLocale != null && numberFormatLocale.isEmpty() == false) {
 		numberFormatLocale = "\"" + numberFormatLocale + "\"";
@@ -137,6 +138,9 @@
 <% }%>
 <% if (samplingLevel != null && samplingLevel.trim().isEmpty() == false) { %>
 	<%=cid%>.setSamplingLevel("<%=samplingLevel%>");
+<% } %>
+<% if (maxAttempts != null && maxAttempts.trim().isEmpty() == false) { %>
+	<%=cid%>.setMaxRetriesInCaseOfErrors(<%=maxAttempts%>);
 <% } %>
 	// fire query and fetch first chunk of data
 	try {
