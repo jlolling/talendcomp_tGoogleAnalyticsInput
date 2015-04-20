@@ -15,6 +15,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -38,6 +40,7 @@ import com.google.api.services.analytics.model.GaData.ColumnHeaders;
 
 public class GoogleAnalyticsInput {
 
+	private Logger logger = null;
 	private static final Map<String, GoogleAnalyticsInput> clientCache = new HashMap<String, GoogleAnalyticsInput>();
 	private final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
 	private final JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -85,6 +88,7 @@ public class GoogleAnalyticsInput {
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
 	private int errorCode = 0;
 	private boolean success = true;
+	private boolean loadResourcesFromClassPath = false;
 
 	public static void putIntoCache(String key, GoogleAnalyticsInput gai) {
 		clientCache.put(key, gai);
@@ -340,8 +344,8 @@ public class GoogleAnalyticsInput {
 		if (profileId == null || profileId.length() < 5) {
 			throw new Exception("profileId is missing or not long enough");
 		}
-		if (metrics == null || metrics.startsWith("ga:") == false) {
-			throw new Exception("Missing or invalid metrics:" + metrics);
+		if (metrics == null) {
+			throw new Exception("Missing metrics");
 		}
 		if (startDate == null || startDate.trim().isEmpty()) {
 			throw new Exception("Missing start date!");
@@ -377,31 +381,14 @@ public class GoogleAnalyticsInput {
 		if (samplingLevel != null) {
 			getRequest.setSamplingLevel(samplingLevel);
 		}
-		errorCode = 0;
-		try {
-			success = false;
-			gaData = getRequest.execute();
-			success = true;
-		} catch (Exception ge) {
-			if (ge instanceof HttpResponseException) {
-				errorCode = ((HttpResponseException) ge).getStatusCode();
-			}
-			throw ge;
-		}
-		lastResultSet = gaData.getRows();
-		if (lastResultSet == null) {
-			// fake an empty result set to avoid breaking further processing
-			lastResultSet = new ArrayList<List<String>>();
-		}
-		lastFetchedRowCount = lastResultSet.size();
-		currentPlainRowIndex = 0;
+		doExecute();
 		overallRowCount = 0;
 		totalsDelivered = false;
 		startIndex = 1;
 		maxCountNormalizedValues = 0;
 		currentNormalizedValueIndex = 0;
 	}
-
+	
 	private void addRequestedDimensionColumns(String columnStr) {
 		if (columnStr != null) {
 			StringTokenizer st = new StringTokenizer(columnStr, ",");
@@ -449,6 +436,45 @@ public class GoogleAnalyticsInput {
 		checkColumns();
 	}
 	
+	private int maxRetriesInCaseOfErrors = 5;
+	private int currentAttempt = 0;
+	
+	private void doExecute() throws Exception {
+		int waitTime = 1000;
+		for (currentAttempt = 0; currentAttempt < maxRetriesInCaseOfErrors; currentAttempt++) {
+			errorCode = 0;
+			try {
+				gaData = getRequest.execute();
+				success = true;
+				break;
+			} catch (Exception ge) {
+				success = false;
+				if (ge instanceof HttpResponseException) {
+					errorCode = ((HttpResponseException) ge).getStatusCode();
+				}
+				warn("Got error:" + ge.getMessage());
+				if (currentAttempt == (maxRetriesInCaseOfErrors - 1)) {
+					error("All repetition of requests failed:" + ge.getMessage(), ge);
+					throw ge;
+				} else {
+					// wait
+					try {
+						info("Retry request in " + waitTime + "ms");
+						Thread.sleep(waitTime);
+					} catch (InterruptedException ie) {}
+					waitTime = waitTime * 2;
+				}
+			}
+		}
+		lastResultSet = gaData.getRows();
+		if (lastResultSet == null) {
+			// fake an empty result set to avoid breaking further processing
+			lastResultSet = new ArrayList<List<String>>();
+		}
+		lastFetchedRowCount = lastResultSet.size();
+		currentPlainRowIndex = 0;
+	}
+
 	/**
 	 * checks if more result set available
 	 * @return true if more data sets available
@@ -473,23 +499,7 @@ public class GoogleAnalyticsInput {
 				&& (fetchSize == 0 || lastFetchedRowCount == fetchSize)) {
 			startIndex = startIndex + lastFetchedRowCount;
 			getRequest.setStartIndex(startIndex);
-			errorCode = 0;
-			try {
-				success = false;
-				gaData = getRequest.execute();
-				success = true;
-			} catch (Exception ge) {
-				if (ge instanceof HttpResponseException) {
-					errorCode = ((HttpResponseException) ge).getStatusCode();
-				}
-				throw ge;
-			}
-			lastResultSet = gaData.getRows();
-			if (lastResultSet == null) {
-				lastResultSet = new ArrayList<List<String>>();
-			}
-			lastFetchedRowCount = lastResultSet.size();
-			currentPlainRowIndex = 0;
+			doExecute();
 		}
 		if (lastFetchedRowCount > 0 && currentPlainRowIndex < lastFetchedRowCount) {
 			return true;
@@ -759,6 +769,48 @@ public class GoogleAnalyticsInput {
 
 	public boolean isSuccess() {
 		return success;
+	}
+	
+	public void info(String message) {
+		if (logger != null) {
+			logger.info(message);
+		} else {
+			System.out.println("INFO:" + message);
+		}
+	}
+	
+	public void debug(String message) {
+		if (logger != null) {
+			logger.debug(message);
+		} else {
+			System.out.println("DEBUG:" + message);
+		}
+	}
+
+	public void warn(String message) {
+		if (logger != null) {
+			logger.warn(message);
+		} else {
+			System.err.println("WARN:" + message);
+		}
+	}
+
+	public void error(String message, Exception e) {
+		if (logger != null) {
+			logger.error(message, e);
+		} else {
+			System.err.println("ERROR:" + message);
+		}
+	}
+
+	public void setLogger(Logger logger) {
+		this.logger = logger;
+	}
+
+	public void setMaxRetriesInCaseOfErrors(Integer maxRetriesInCaseOfErrors) {
+		if (maxRetriesInCaseOfErrors != null) {
+			this.maxRetriesInCaseOfErrors = maxRetriesInCaseOfErrors;
+		}
 	}
 
 }
