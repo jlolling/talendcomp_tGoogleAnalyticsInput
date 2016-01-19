@@ -1,8 +1,8 @@
 import java.util.List;
 
-import de.jlo.talendcomp.googleanalytics.DimensionValue;
-import de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput;
-import de.jlo.talendcomp.googleanalytics.MetricValue;
+import de.jlo.talendcomp.google.analytics.DimensionValue;
+import de.jlo.talendcomp.google.analytics.GoogleAnalyticsInput;
+import de.jlo.talendcomp.google.analytics.MetricValue;
 
 public class TestGoogleAnalytics {
 

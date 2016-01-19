@@ -72,11 +72,11 @@
 %>
     // start creating client
 <% if ("true".equals(keepClient)) {%>
-	de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput <%=cid%> = de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput.getFromCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName);
+	de.jlo.talendcomp.google.analytics.GoogleAnalyticsInput <%=cid%> = de.jlo.talendcomp.google.analytics.GoogleAnalyticsInput.getFromCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName);
 	if (<%=cid%> == null) {
-		<%=cid%> = new de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput();
+		<%=cid%> = new de.jlo.talendcomp.google.analytics.GoogleAnalyticsInput();
 <% } else {%>
-	de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput <%=cid%> = new de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput();
+	de.jlo.talendcomp.google.analytics.GoogleAnalyticsInput <%=cid%> = new de.jlo.talendcomp.google.analytics.GoogleAnalyticsInput();
 <% }%>
 <% if (applicationName != null && applicationName.trim().isEmpty() == false) {%>
 		<%=cid%>.setApplicationName(<%=applicationName%>);
@@ -114,7 +114,7 @@
 			}
 		globalMap.put("<%=cid%>", <%=cid%>);
 <% if ("true".equals(keepClient)) {%>
-		de.jlo.talendcomp.googleanalytics.GoogleAnalyticsInput.putIntoCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName, <%=cid%>);
+		de.jlo.talendcomp.google.analytics.GoogleAnalyticsInput.putIntoCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName, <%=cid%>);
 	}
 <% }%>
     globalMap.put("<%=cid%>_ERROR_CODE", 0);
@@ -180,7 +180,7 @@
 <% } %>	
 	    }
 <%	 if (connDimensions != null) { %> 
-		de.jlo.talendcomp.googleanalytics.DimensionValue dv = <%=cid%>.getCurrentDimensionValue();
+		de.jlo.talendcomp.google.analytics.DimensionValue dv = <%=cid%>.getCurrentDimensionValue();
 		if (dv != null) {
 			<%=connDimensions.getName()%> = new <%=connDimensions.getName()%>Struct();
 			<%=connDimensions.getName()%>.ROW_NUM = dv.rowNum;
@@ -192,7 +192,7 @@
 		}
 <%   } %>
 <%   if (connMetrics != null) { %>
-		de.jlo.talendcomp.googleanalytics.MetricValue mv = <%=cid%>.getCurrentMetricValue();
+		de.jlo.talendcomp.google.analytics.MetricValue mv = <%=cid%>.getCurrentMetricValue();
 		if (mv != null) {
 		    <%=connMetrics.getName()%> = new <%=connMetrics.getName()%>Struct();
 			<%=connMetrics.getName()%>.ROW_NUM = mv.rowNum;
@@ -248,7 +248,7 @@
 					<%=conn.getName()%>.<%=col.getLabel()%> = <%=cid%>_value_<%=index%>;
 <%              } else { %>
 	    	        try {
-						<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.jlo.talendcomp.googleanalytics.Util.convertToDatatype(
+						<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.jlo.talendcomp.google.analytics.Util.convertToDatatype(
 								<%=cid%>_value_<%=index%>, 
 								"<%=col.getTalendType().substring(3)%>", 
 								<%=((col.getPattern() != null && col.getPattern().isEmpty() == false) ? col.getPattern() : numberFormatLocale)%>);
@@ -262,7 +262,7 @@
 				<%=conn.getName()%>.<%=col.getLabel()%> = <%=cid%>_value_<%=index%>;
 <%                  } else { %>
     	        try {
-					<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.jlo.talendcomp.googleanalytics.Util.convertToDatatype(
+					<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.jlo.talendcomp.google.analytics.Util.convertToDatatype(
 							<%=cid%>_value_<%=index%>, 
 							"<%=col.getTalendType().substring(3)%>", 
 							<%=((col.getPattern() != null && col.getPattern().isEmpty() == false) ? col.getPattern() : numberFormatLocale)%>);
@@ -276,7 +276,7 @@
 				<%=conn.getName()%>.<%=col.getLabel()%> = <%=cid%>_value_<%=index%>;
 <%              } else { %>
     	        try {
-					<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.jlo.talendcomp.googleanalytics.Util.convertToDatatype(
+					<%=conn.getName()%>.<%=col.getLabel()%> = (<%=javaClassName%>) de.jlo.talendcomp.google.analytics.Util.convertToDatatype(
 							<%=cid%>_value_<%=index%>, 
 							"<%=col.getTalendType().substring(3)%>", 
 							<%=((col.getPattern() != null && col.getPattern().isEmpty() == false) ? col.getPattern() : numberFormatLocale)%>);
