@@ -86,9 +86,9 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 	private List<Dimension> listDimensions = null;
 	private List<Metric> listMetrics = null;
 	private List<OrderBy> listOrderBys = null;
-//	private List<Segment> listSegments = null;
 	private AnalyticsReporting analyticsClient;
 	private ReportRequest reportRequest;
+	private String reportRequestJSON = null;
 	private BatchGet request;
 	private GetReportsResponse response;
 	private Report report = null;
@@ -306,6 +306,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 	private int maxRetriesInCaseOfErrors = 5;
 	private int currentAttempt = 0;
 	private String errorMessage = null;
+	private JacksonFactory factory = JacksonFactory.getDefaultInstance();
 	
 	private void doExecute() throws Exception {
 		int waitTime = 1000;
@@ -314,7 +315,10 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 			try {
 				if (isDebug()) {
 					debug(request.getRequestMethod() + " " + request.buildHttpRequestUrl().toString());
-					debug(request.getJsonContent().toString());
+					if (isDebug()) {
+						String json = factory.toPrettyString(request.getJsonContent());
+						debug(json);
+					}
 				}
 				response = request.execute();
 				success = true;
@@ -528,7 +532,11 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 			MetricValue mv = new MetricValue();
 			mv.name = listMetrics.get(index).getAlias();
 			mv.rowNum = currentPlainRowIndex;
-			String valueStr = oneRow.get(index + listDimensions.size());
+			int countDimensions = listDimensions.size();
+			if (excludeSegmentDimension) {
+				countDimensions--;
+			}
+			String valueStr = oneRow.get(index + countDimensions);
 			try {
 				mv.value = Util.convertToDouble(valueStr, Locale.ENGLISH.toString());
 				oneRowMetricValues.add(mv);
@@ -803,10 +811,11 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 					OrderBy orderBy = new OrderBy();
 					if (sort.startsWith("-")) {
 						orderBy.setSortOrder("DESCENDING");
+						orderBy.setFieldName(sort.substring(1));
 					} else {
 						orderBy.setSortOrder("ASCENDING");
+						orderBy.setFieldName(sort);
 					}
-					orderBy.setFieldName(sort);
 					listOrderBys.add(orderBy);
 				}
 			}
@@ -826,17 +835,11 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 			reportRequest.setSegments(Arrays.asList(seg));
 		}
 	}
-	
-	/*
-	private List<Segment> buildSegments() {
-		if (segment != null) {
-			listSegments = new ArrayList<Segment>();
-			// TODO extract segments
-			
-		} else {
-			listSegments = null;
+
+	public void setReportRequestJSON(String reportRequestJSON) {
+		if (reportRequestJSON != null && reportRequestJSON.trim().isEmpty() == false) {
+			this.reportRequestJSON = reportRequestJSON.trim();
 		}
-		return listSegments;
 	}
-	*/
+
 }

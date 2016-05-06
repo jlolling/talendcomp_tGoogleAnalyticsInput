@@ -1,5 +1,11 @@
 import java.util.List;
 
+import org.apache.log4j.varia.FallbackErrorHandler;
+
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.analyticsreporting.v4.model.Dimension;
+import com.google.api.services.analyticsreporting.v4.model.ReportRequest;
+
 import de.jlo.talendcomp.google.analytics.DimensionValue;
 import de.jlo.talendcomp.google.analytics.MetricValue;
 import de.jlo.talendcomp.google.analytics.v4.GoogleAnalyticsInput;
@@ -10,7 +16,13 @@ public class TestGoogleAnalytics {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		testGAData();
+		try {
+			testGAData();
+//			test_JacksonFactory();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static void testGAData() {
@@ -42,13 +54,13 @@ public class TestGoogleAnalytics {
 		gi.setProfileId("59815695");
 		gi.setStartDate("2016-01-01");
 		gi.setEndDate("2016-04-01");
-
 		gi.setDimensions("ga:date,ga:source,ga:keyword,ga:segment");
 		gi.setMetrics("ga:sessions,ga:pageviews");
 		gi.setSegment("sessions::condition::ga:pagePath=~/sqlrunner/");
+		gi.setSorts("-ga:pageviews,ga:sessions");
 		try {
-			fetchPlainData(gi);
-//			fetchNormalizedData(gi);
+//			fetchPlainData(gi);
+			fetchNormalizedData(gi);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -173,6 +185,49 @@ public class TestGoogleAnalytics {
 				+ " index:" + index);
 		System.out
 				.println("#####################################################");
+	}
+	
+	public static void test_JacksonFactory() throws Exception {
+		String dimStr = "{\"name\":\"ga:segment\"}";
+		JacksonFactory f = JacksonFactory.getDefaultInstance();
+		Dimension d = f.fromString(dimStr, Dimension.class);
+		System.out.println(d.toPrettyString());
+		String requestStr = "{\n"
+			    + "  \"reportRequests\": \n"
+			    + "  [\n"
+			    + "    {\n"
+			    + "      \"dateRanges\": \n"
+			    + "      [\n"
+			    + "        {\n"
+			    + "          \"startDate\": \"2016-01-01\",\n"
+			    + "          \"endDate\": \"2016-01-02\"\n"
+			    + "        }\n"
+			    + "      ],\n"
+			    + "      \"viewId\": \"59815695\",\n"
+			    + "      \"dimensions\": \n"
+			    + "      [\n"
+			    + "        {\n"
+			    + "          \"name\": \"ga:source\"\n"
+			    + "        },\n"
+			    + "        {\n"
+			    + "          \"name\": \"ga:browser\"\n"
+			    + "        }\n"
+			    + "      ],\n"
+			    + "      \"metrics\": \n"
+			    + "      [\n"
+			    + "        {\n"
+			    + "          \"alias\": \"ga:avgTimeOnPage\",\n"
+			    + "          \"expression\": \"ga:timeOnPage / (ga:pageviews - ga:exits)\"\n"
+			    + "        },\n"
+			    + "        {\n"
+			    + "          \"expression\": \"ga:sessions\"\n"
+			    + "        }\n"
+			    + "      ]\n"
+			    + "    }\n"
+			    + "  ]\n"
+			    + "}";
+		ReportRequest r = f.fromString(requestStr, ReportRequest.class);
+		System.out.println(r.toPrettyString());
 	}
 	
 }
