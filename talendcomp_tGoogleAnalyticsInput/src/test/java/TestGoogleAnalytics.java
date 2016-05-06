@@ -1,8 +1,8 @@
 import java.util.List;
 
 import de.jlo.talendcomp.google.analytics.DimensionValue;
-import de.jlo.talendcomp.google.analytics.GoogleAnalyticsInput;
 import de.jlo.talendcomp.google.analytics.MetricValue;
+import de.jlo.talendcomp.google.analytics.v4.GoogleAnalyticsInput;
 
 public class TestGoogleAnalytics {
 
@@ -17,7 +17,7 @@ public class TestGoogleAnalytics {
 
 		GoogleAnalyticsInput gi = new GoogleAnalyticsInput();
 		gi.setApplicationName("GATalendComp");
-
+		gi.setDebug(true);
 		gi.setAccountEmail("503880615382@developer.gserviceaccount.com");
 		gi.setKeyFile("/Volumes/Data/Talend/testdata/ga/config/2bc309bb904201fcc6a443ff50a3d8aca9c0a12c-privatekey.p12");
 		//gi.setAccountEmail("jan.lolling@gmail.com");
@@ -40,14 +40,15 @@ public class TestGoogleAnalytics {
 		// System.out.println("############################# " + i +
 		// " ########################");
 		gi.setProfileId("59815695");
-		gi.setStartDate("2014-01-01");
-		gi.setEndDate("2014-10-01");
+		gi.setStartDate("2016-01-01");
+		gi.setEndDate("2016-04-01");
 
-		gi.setDimensions("ga:date,ga:source,ga:keyword");
-		gi.setMetrics("ga:visits,ga:exits");
+		gi.setDimensions("ga:date,ga:source,ga:keyword,ga:segment");
+		gi.setMetrics("ga:sessions,ga:pageviews");
+		gi.setSegment("sessions::condition::ga:pagePath=~/sqlrunner/");
 		try {
-//			fetchPlainData(gi);
-			fetchNormalizedData(gi);
+			fetchPlainData(gi);
+//			fetchNormalizedData(gi);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

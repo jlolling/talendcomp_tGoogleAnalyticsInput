@@ -83,6 +83,8 @@ public class Util {
 				return convertToInteger(value, options);
 			} else if ("Long".equalsIgnoreCase(dataType)) {
 				return convertToLong(value, options);
+			} else if ("Short".equalsIgnoreCase(dataType)) {
+				return convertToLong(value, options);
 			} else if ("Timestamp".equalsIgnoreCase(dataType)) {
 				return convertToTimestamp(value, options);
 			} else {
@@ -163,6 +165,13 @@ public class Util {
 			return null;
 		}
 		return getNumberFormat(locale).parse(value.trim()).longValue();
+	}
+
+	public static Short convertToShort(String value, String locale) throws Exception {
+		if (value == null || value.trim().isEmpty()) {
+			return null;
+		}
+		return getNumberFormat(locale).parse(value.trim()).shortValue();
 	}
 
 	public static BigDecimal convertToBigDecimal(String value) throws Exception {
