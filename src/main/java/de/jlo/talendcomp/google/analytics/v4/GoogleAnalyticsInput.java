@@ -16,6 +16,7 @@
 package de.jlo.talendcomp.google.analytics.v4;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.analyticsreporting.v4.AnalyticsReporting;
 import com.google.api.services.analyticsreporting.v4.AnalyticsReporting.Reports.BatchGet;
@@ -89,6 +91,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 	private AnalyticsReporting analyticsClient;
 	private ReportRequest reportRequest;
 	private String reportRequestJSON = null;
+	private boolean useJsonTemplateToBuildRequest = false;
 	private BatchGet request;
 	private GetReportsResponse response;
 	private Report report = null;
@@ -255,22 +258,32 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		if (endDate == null || endDate.trim().isEmpty()) {
 			throw new Exception("Missing end date!");
 		}
-		reportRequest = new ReportRequest();
-		reportRequest.setViewId(profileId);
-		reportRequest.setDateRanges(getDateRanges());
-		// we have to add segments before dimensions because we have to check dimensions for the ga:dimension dim!
-		setupSegments();
-		reportRequest.setDimensions(buildDimensions());
-		reportRequest.setMetrics(buildMetrics());
-		if (filters != null && filters.trim().isEmpty() == false) {
-			reportRequest.setFiltersExpression(filters);
+		if (useJsonTemplateToBuildRequest) {
+			reportRequest = buildReportRequestFromJsonTemplate();
+			reportRequest.setViewId(profileId);
+			reportRequest.setDateRanges(getDateRanges());
+			reportRequest.setHideTotals(addTotalsRecord == false);
+			if (samplingLevel != null) {
+				reportRequest.setSamplingLevel(samplingLevel);
+			}
+		} else {
+			reportRequest = new ReportRequest();
+			reportRequest.setViewId(profileId);
+			reportRequest.setDateRanges(getDateRanges());
+			// we have to add segments before dimensions because we have to check dimensions for the ga:dimension dim!
+			setupSegments();
+			reportRequest.setDimensions(buildDimensions());
+			reportRequest.setMetrics(buildMetrics());
+			if (filters != null && filters.trim().isEmpty() == false) {
+				reportRequest.setFiltersExpression(filters);
+			}
+			reportRequest.setOrderBys(buildOrderBys());
+			reportRequest.setHideTotals(addTotalsRecord == false);
+			if (samplingLevel != null) {
+				reportRequest.setSamplingLevel(samplingLevel);
+			}
 		}
-		reportRequest.setOrderBys(buildOrderBys());
-		reportRequest.setHideTotals(addTotalsRecord == false);
-		if (samplingLevel != null) {
-			reportRequest.setSamplingLevel(samplingLevel);
-		}
-		setupRequest();
+		setupGetRequest();
 		doExecute();
 		overallRowCount = 0;
 		totalsDelivered = false;
@@ -279,7 +292,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		currentNormalizedValueIndex = 0;
 	}
 	
-	private void setupRequest() throws IOException {
+	private void setupGetRequest() throws IOException {
 		GetReportsRequest getRequest = new GetReportsRequest();
 		getRequest.setReportRequests(Arrays.asList(reportRequest));
 		if (fetchSize > 0) {
@@ -387,7 +400,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		if (currentPlainRowIndex == lastFetchedRowCount
 				&& (fetchSize == 0 || lastFetchedRowCount == fetchSize)) {
 			startIndex = startIndex + lastFetchedRowCount;
-			setupRequest();
+			setupGetRequest();
 			doExecute();
 		}
 		if (lastFetchedRowCount > 0 && currentPlainRowIndex < lastFetchedRowCount) {
@@ -836,10 +849,29 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		}
 	}
 
-	public void setReportRequestJSON(String reportRequestJSON) {
+	public void setJsonReportTemplate(String reportRequestJSON) {
 		if (reportRequestJSON != null && reportRequestJSON.trim().isEmpty() == false) {
 			this.reportRequestJSON = reportRequestJSON.trim();
+		} else {
+			throw new IllegalArgumentException("Json report template cannot be empty or null!");
 		}
+	}
+	
+	private ReportRequest buildReportRequestFromJsonTemplate() throws IOException {
+		if (reportRequestJSON == null) {
+			throw new IllegalStateException("No json template for report provided!");
+		}
+		JsonObjectParser parser = new JsonObjectParser(JSON_FACTORY);
+		StringReader sr = new StringReader(reportRequestJSON);
+		return parser.parseAndClose(sr, ReportRequest.class);
+	}
+
+	public boolean isUseJsonTemplateToBuildRequest() {
+		return useJsonTemplateToBuildRequest;
+	}
+
+	public void setUseJsonTemplateToBuildRequest(boolean useJsonTemplateToBuildRequest) {
+		this.useJsonTemplateToBuildRequest = useJsonTemplateToBuildRequest;
 	}
 
 }
