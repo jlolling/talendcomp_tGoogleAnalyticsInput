@@ -249,9 +249,6 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		if (profileId == null || profileId.length() < 5) {
 			throw new Exception("profileId is missing or not long enough");
 		}
-		if (metrics == null) {
-			throw new Exception("Missing metrics");
-		}
 		if (startDate == null || startDate.trim().isEmpty()) {
 			throw new Exception("Missing start date!");
 		}
@@ -293,13 +290,13 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 	}
 	
 	private void setupGetRequest() throws IOException {
-		GetReportsRequest getRequest = new GetReportsRequest();
-		getRequest.setReportRequests(Arrays.asList(reportRequest));
 		if (fetchSize > 0) {
 			reportRequest.setPageSize(fetchSize);
 		}
 		reportRequest.setPageSize(fetchSize);
 		reportRequest.setPageToken(pageToken);
+		GetReportsRequest getRequest = new GetReportsRequest();
+		getRequest.setReportRequests(Arrays.asList(reportRequest));
 		request = analyticsClient
 				.reports()
 				.batchGet(getRequest);
@@ -543,7 +540,11 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		final List<MetricValue> oneRowMetricValues = new ArrayList<MetricValue>();
 		for (; index < listMetrics.size(); index++) {
 			MetricValue mv = new MetricValue();
-			mv.name = listMetrics.get(index).getAlias();
+			Metric metric = listMetrics.get(index);
+			mv.name = metric.getAlias();
+			if (mv.name == null) {
+				mv.name = metric.getExpression();
+			}
 			mv.rowNum = currentPlainRowIndex;
 			int countDimensions = listDimensions.size();
 			if (excludeSegmentDimension) {
@@ -857,13 +858,19 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		}
 	}
 	
-	private ReportRequest buildReportRequestFromJsonTemplate() throws IOException {
+	private ReportRequest buildReportRequestFromJsonTemplate() throws Exception {
 		if (reportRequestJSON == null) {
 			throw new IllegalStateException("No json template for report provided!");
 		}
 		JsonObjectParser parser = new JsonObjectParser(JSON_FACTORY);
 		StringReader sr = new StringReader(reportRequestJSON);
-		return parser.parseAndClose(sr, ReportRequest.class);
+		GetReportsRequest requestArray = parser.parseAndClose(sr, GetReportsRequest.class);
+		if (requestArray.getReportRequests() == null || requestArray.getReportRequests().isEmpty()) {
+			throw new Exception("Got empty request array!");
+		} else if (requestArray.getReportRequests().size() > 1) {
+			warn("The given report request json contains: " + requestArray.getReportRequests().size() + " reports. Only the first one will be executed!");
+		}
+		return requestArray.getReportRequests().get(0);
 	}
 
 	public boolean isUseJsonTemplateToBuildRequest() {

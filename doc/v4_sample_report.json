@@ -1,0 +1,39 @@
+{
+  "reportRequests": 
+  [
+    {
+      "dateRanges": 
+      [
+        {
+          "startDate": "2016-01-01",
+          "endDate": "2016-02-01"
+        }
+      ],
+      "viewId": "59815695",
+      "dimensions": 
+      [
+        {
+          "name": "ga:source"
+        },
+        {
+          "name": "ga:keyword"
+        }
+      ],
+      "metrics": 
+      [
+        {
+          "expression": "ga:visits"
+        },
+        {
+          "expression": "ga:exits"
+        },
+        {
+          "expression": "ga:goal1Starts"
+        },
+        {
+          "expression": "ga:goal1Completions"
+        }
+      ]
+    }
+  ]
+}

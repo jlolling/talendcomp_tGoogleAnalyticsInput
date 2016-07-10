@@ -113,6 +113,17 @@
 			GROUP="QUERY"/>
 		
 		<PARAMETER 
+			FIELD="LABEL"
+			COLOR="0;0;0"
+			NAME="USE_JSON_TEMPLATE_NOTE" 
+			NUM_ROW="56" 
+			REQUIRED="true" 
+			SHOW_IF="(API_VERSION == 'v4') and (USE_JSON_TEMPLATE == 'true')"
+			GROUP="QUERY">
+			<DEFAULT>The dateRanges and viewId will be replaced by the values from the settings. You can omit dataRanges and viewId in your template.</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER 
 			FIELD="CLOSED_LIST" 
 			NAME="SETUP_JSON_REPORT_DESCRIPTION" 
 			NUM_ROW="58" 
@@ -156,7 +167,49 @@
 	    	REQUIRED="true"
 			SHOW_IF="(API_VERSION == 'v4') and (USE_JSON_TEMPLATE == 'true') and (SETUP_JSON_REPORT_DESCRIPTION == 'READ_FROM_INPUT_PLAIN_TEXT')"
 		>
-	    	<DEFAULT>{}</DEFAULT>
+	    	<DEFAULT>
+	    		<![CDATA[
+{
+  "reportRequests": 
+  [
+    {
+      "dateRanges": 
+      [
+        {
+          "startDate": "xxxx-xx-xx",
+          "endDate": "xxxx-xx-xx"
+        }
+      ],
+      "viewId": "xxxxxx",
+      "dimensions": 
+      [
+        {
+          "name": "ga:source"
+        },
+        {
+          "name": "ga:keyword"
+        }
+      ],
+      "metrics": 
+      [
+        {
+          "expression": "ga:visits"
+        },
+        {
+          "expression": "ga:exits"
+        },
+        {
+          "expression": "ga:goal1Starts"
+        },
+        {
+          "expression": "ga:goal1Completions"
+        }
+      ]
+    }
+  ]
+}
+	    		]]>
+	    	</DEFAULT>
 	    </PARAMETER> 
 
 		<PARAMETER 
@@ -281,7 +334,7 @@
 	<CODEGENERATION>
 		<IMPORTS>
 			<IMPORT NAME="Google Analytics"
-				MODULE="jlo.talendcomp.google.analytics-8.0-jar-with-dependencies.jar"
+				MODULE="jlo-talendcomp-google-analytics-8.0.jar"
 				REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>
