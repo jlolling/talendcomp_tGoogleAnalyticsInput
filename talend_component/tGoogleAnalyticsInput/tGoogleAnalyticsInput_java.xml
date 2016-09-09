@@ -334,7 +334,7 @@
 	<CODEGENERATION>
 		<IMPORTS>
 			<IMPORT NAME="Google Analytics"
-				MODULE="jlo-talendcomp-google-analytics-8.0.jar"
+				MODULE="cimt-talendcomp-google-analytics-8.1.jar"
 				REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>

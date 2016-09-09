@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.jlo.talendcomp.google</groupId>
-	<artifactId>jlo-talendcomp-google-analytics</artifactId>
+	<artifactId>cimt-talendcomp-google-analytics</artifactId>
 	<name>GoogleAnalytics Talend Component</name>
 	<repositories>
 		<repository>
@@ -14,22 +14,22 @@
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-analytics</artifactId>
-			<version>${project.api.version}</version>
+			<version>v3-rev134-1.22.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-analyticsreporting</artifactId>
-			<version>v4-rev1-1.21.0</version>
+			<version>v4-rev10-1.22.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.http-client</groupId>
 			<artifactId>google-http-client-jackson2</artifactId>
-			<version>${project.http.version}</version>
+			<version>1.22.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client-jetty</artifactId>
-			<version>${project.oauth.version}</version>
+			<version>1.22.0</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -38,9 +38,6 @@
 		</dependency>
 	</dependencies>
 	<properties>
-		<project.api.version>v3-rev127-1.21.0</project.api.version>
-		<project.http.version>1.21.0</project.http.version>
-		<project.oauth.version>1.21.0</project.oauth.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<organization>
@@ -79,5 +76,5 @@
 			</plugin>
 		</plugins>
 	</build>
-	<version>8.0</version>
+	<version>8.1</version>
 </project>

@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.jlo.talendcomp.google</groupId>
-  <artifactId>jlo-talendcomp-google-analytics</artifactId>
+  <artifactId>cimt-talendcomp-google-analytics</artifactId>
   <name>GoogleAnalytics Talend Component</name>
-  <version>8.0</version>
+  <version>8.1</version>
   <organization>
     <name>Jan Lolling</name>
     <url>http://www.jan-lolling.de</url>
@@ -46,10 +46,7 @@
     </repository>
   </repositories>
   <properties>
-    <project.http.version>1.21.0</project.http.version>
-    <project.oauth.version>1.21.0</project.oauth.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.api.version>v3-rev127-1.21.0</project.api.version>
   </properties>
 </project>
 
