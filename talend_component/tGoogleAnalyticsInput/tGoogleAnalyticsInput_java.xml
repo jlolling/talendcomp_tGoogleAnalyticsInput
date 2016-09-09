@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <COMPONENT>
-	<HEADER PLATEFORM="ALL" SERIAL="" VERSION="7.0" STATUS="PROD"
-		COMPATIBILITY="ALL" AUTHOR="Jan Lolling" RELEASE_DATE="20160430A"
+	<HEADER PLATEFORM="ALL" SERIAL="" VERSION="7.1" STATUS="PROD"
+		COMPATIBILITY="ALL" AUTHOR="Jan Lolling" RELEASE_DATE="20160909A"
 		STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true">
 		<SIGNATURE />
 	</HEADER>
@@ -188,9 +188,7 @@
 	</ADVANCED_PARAMETERS>
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="Google Analytics"
-				MODULE="jlo.talendcomp.google.analytics-7.0-jar-with-dependencies.jar"
-				REQUIRED="true" />
+			<IMPORT NAME="Google Analytics"	MODULE="cimt-talendcomp-google-analytics-7.1.jar" REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>
 	<RETURNS>

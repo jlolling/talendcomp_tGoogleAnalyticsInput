@@ -638,21 +638,36 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		if (report == null) {
 			throw new IllegalStateException("No query executed");
 		}
-		return report.getData().getIsDataGolden() == false;
+		Boolean isGolden = report.getData().getIsDataGolden();
+		if (isGolden != null) {
+			return isGolden == false;
+		} else {
+			return true;
+		}
 	}
 
 	public Long getSampleSize() {
 		if (report == null) {
 			throw new IllegalStateException("No query executed");
 		}
-		return report.getData().getSamplesReadCounts().get(0);
+		List<Long> counts = report.getData().getSamplesReadCounts();
+		if (counts != null && counts.size() > 0) {
+			return counts.get(0);
+		} else {
+			return 0l;
+		}
 	}
 	
 	public Long getSampleSpace() {
 		if (report == null) {
 			throw new IllegalStateException("No query executed");
 		}
-		return report.getData().getSamplingSpaceSizes().get(0);
+		List<Long> sizes = report.getData().getSamplingSpaceSizes();
+		if (sizes != null && sizes.size() > 0) {
+			return sizes.get(0);
+		} else {
+			return 0l;
+		}
 	}
 
 	public Integer getTotalAffectedRows() {
