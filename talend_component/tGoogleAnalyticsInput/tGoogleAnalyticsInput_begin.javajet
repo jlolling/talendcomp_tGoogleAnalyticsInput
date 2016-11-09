@@ -11,16 +11,16 @@
 	" 
 %>
 <% 
-   CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-   INode node = (INode) codeGenArgument.getArgument();
-   String cid = node.getUniqueName();
-   String applicationName = ElementParameterParser.getValue(node, "__APPLICATION_NAME__");
-   boolean useServiceAccount = "SERVICE_ACCOUNT".equals(ElementParameterParser.getValue(node, "__AUTHENTICATION_METHOD__"));
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode) codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
+	String applicationName = ElementParameterParser.getValue(node, "__APPLICATION_NAME__");
+	boolean useServiceAccount = "SERVICE_ACCOUNT".equals(ElementParameterParser.getValue(node, "__AUTHENTICATION_METHOD__"));
 	String accountEmail = ElementParameterParser.getValue(node, "__SERVICE_ACCOUNT_EMAIL__");
 	String keyFile = ElementParameterParser.getValue(node, "__KEY_FILE__");
-   String clientSecretFile = ElementParameterParser.getValue(node, "__CLIENT_SECRET_FILE__");
-   String userEmail = ElementParameterParser.getValue(node, "__USER_ACCOUNT_EMAIL__");
-   String profileId = ElementParameterParser.getValue(node, "__PROFILE_ID__");
+	String clientSecretFile = ElementParameterParser.getValue(node, "__CLIENT_SECRET_FILE__");
+	String userEmail = ElementParameterParser.getValue(node, "__USER_ACCOUNT_EMAIL__");
+	String profileId = ElementParameterParser.getValue(node, "__PROFILE_ID__");
 	String startDate = ElementParameterParser.getValue(node, "__START_DATE__");
 	String endDate = ElementParameterParser.getValue(node, "__END_DATE__");
 	String dimensions = ElementParameterParser.getValue(node, "__DIMENSIONS__");
@@ -35,22 +35,24 @@
 	String maxAttempts = ElementParameterParser.getValue(node, "__MAX_ATTEMPTS__");
 	String numberFormatLocale = ElementParameterParser.getValue(node, "__NUMBERFORMAT_LOCALE__");
 	if (numberFormatLocale != null && numberFormatLocale.isEmpty() == false) {
-		numberFormatLocale = "\"" + numberFormatLocale + "\"";
+		if (numberFormatLocale.trim().startsWith("\"") == false) {
+			numberFormatLocale = "\"" + numberFormatLocale + "\"";
+		}
 	} else {
 		numberFormatLocale = "null";
 	}
-   boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+	boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
 	boolean deliverTotalsDataset = "true".equals(ElementParameterParser.getValue(node, "__DELIVER_TOTALS_DATASET__"));
 	String keepClient = ElementParameterParser.getValue(node, "__KEEP_CLIENT__");
 	String keepClientName = ElementParameterParser.getValue(node, "__KEEP_CLIENT_KEY__");
 	keepClientName = keepClientName != null && keepClientName.isEmpty() == false ? keepClientName : "\"\"";
-   List<IMetadataColumn> listColumns = null;
-   IConnection conn = null;
-   IConnection connDimensions = null;
-   IConnection connMetrics = null;
+	List<IMetadataColumn> listColumns = null;
+	IConnection conn = null;
+	IConnection connDimensions = null;
+	IConnection connMetrics = null;
 	boolean normalizedFlows = "true".equals(ElementParameterParser.getValue(node, "__NORMALIZED_OUTPUT__"));
 	boolean denormalizeDate = "true".equals(ElementParameterParser.getValue(node, "__DENORMALIZE_DATE__"));
-   if (node.getOutgoingConnections() != null && node.getOutgoingConnections().size() > 0) {
+	if (node.getOutgoingConnections() != null && node.getOutgoingConnections().size() > 0) {
     	if (normalizedFlows) {
 		    List<? extends IConnection> connsDimensions = node.getOutgoingConnections("DIMENSION_VALUES");
 		    if (connsDimensions != null && connsDimensions.size() > 0) {
