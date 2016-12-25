@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <COMPONENT>
-	<HEADER PLATEFORM="ALL" SERIAL="" VERSION="7.0" STATUS="PROD"
-		COMPATIBILITY="ALL" AUTHOR="Jan Lolling" RELEASE_DATE="20160430A"
+	<HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.2" STATUS="PROD"
+		COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20161220"
 		STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true">
 		<SIGNATURE />
 	</HEADER>
@@ -334,7 +334,7 @@
 	<CODEGENERATION>
 		<IMPORTS>
 			<IMPORT NAME="Google Analytics"
-				MODULE="cimt-talendcomp-google-analytics-8.1.jar"
+				MODULE="cimt-talendcomp-google-analytics-8.2.jar"
 				REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>

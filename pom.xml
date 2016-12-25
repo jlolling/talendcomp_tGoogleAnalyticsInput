@@ -21,11 +21,37 @@
 			<artifactId>google-api-services-analyticsreporting</artifactId>
 			<version>v4-rev10-1.22.0</version>
 		</dependency>
-		<dependency>
-			<groupId>com.google.http-client</groupId>
-			<artifactId>google-http-client-jackson2</artifactId>
-			<version>1.22.0</version>
+	    <dependency>
+	      <groupId>com.fasterxml.jackson.core</groupId>
+	      <artifactId>jackson-databind</artifactId>
+	      <version>2.7.5</version>
+	      <scope>compile</scope>
+	    </dependency>
+   		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3.6</version>
 		</dependency>
+	    <dependency>
+	      <groupId>com.google.http-client</groupId>
+	      <artifactId>google-http-client-jackson2</artifactId>
+	      <version>1.22.0</version>
+	      <scope>compile</scope>
+	      <exclusions>
+	        <exclusion>
+	          <artifactId>jackson-core</artifactId>
+	          <groupId>com.fasterxml.jackson.core</groupId>
+	        </exclusion>
+	        <exclusion>
+	        	<groupId>org.apache.httpcomponents</groupId>
+	        	<artifactId>httpcore</artifactId>
+	        </exclusion>
+	        <exclusion>
+	        	<groupId>org.apache.httpcomponents</groupId>
+	        	<artifactId>httpclient</artifactId>
+	        </exclusion>
+	      </exclusions>
+	    </dependency>
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client-jetty</artifactId>
@@ -76,5 +102,5 @@
 			</plugin>
 		</plugins>
 	</build>
-	<version>8.1</version>
+	<version>8.2</version>
 </project>
