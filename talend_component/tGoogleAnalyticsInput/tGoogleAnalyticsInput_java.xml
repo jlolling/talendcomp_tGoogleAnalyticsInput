@@ -1,352 +1,188 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<COMPONENT>
-	<HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.2" STATUS="PROD"
-		COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20161220"
-		STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true">
-		<SIGNATURE />
-	</HEADER>
-
-	<FAMILIES>
-		<FAMILY>Business/Google</FAMILY>
-	</FAMILIES>
-
-	<DOCUMENTATION>
-		<URL />
-	</DOCUMENTATION>
-
-	<CONNECTORS>
-		<CONNECTOR 
-			CTYPE="FLOW" 
-			MAX_INPUT="0" 
-			MAX_OUTPUT="1" 
-			LINE_STYLE="1" 
-			SHOW_IF="NORMALIZED_OUTPUT == 'false'" 
-			/>
-		<CONNECTOR 
-			NAME="DIMENSION_VALUES" 
-			CTYPE="FLOW" 
-			MAX_INPUT="0"
-			MAX_OUTPUT="1" 
-			LINE_STYLE="1" 
-			SHOW_IF="NORMALIZED_OUTPUT == 'true'"
-			/>
-		<CONNECTOR 
-			NAME="METRIC_VALUES" 
-			CTYPE="FLOW" 
-			MAX_INPUT="0"
-			MAX_OUTPUT="1" 
-			LINE_STYLE="1" 
-			SHOW_IF="NORMALIZED_OUTPUT == 'true'"
-			/>
-		<CONNECTOR CTYPE="ITERATE" MAX_INPUT="1" MAX_OUTPUT="0" />
-		<CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" MAX_OUTPUT="1" />
-		<CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" MAX_OUTPUT="1" />
-		<CONNECTOR CTYPE="COMPONENT_OK" />
-		<CONNECTOR CTYPE="COMPONENT_ERROR" />
-		<CONNECTOR CTYPE="RUN_IF" />
-	</CONNECTORS>
-	<PARAMETERS>
-		<PARAMETER FIELD="TEXT" NAME="APPLICATION_NAME" NUM_ROW="10" GROUP="CLIENT">
-			<DEFAULT>"Fetch Analytics"</DEFAULT>
-		</PARAMETER>
-		<PARAMETER 
-			FIELD="CLOSED_LIST" 
-			NAME="AUTHENTICATION_METHOD" 
-			NUM_ROW="15" 
-			REQUIRED="true" 
-			GROUP="CLIENT">
-	    	<ITEMS DEFAULT="SERVICE_ACCOUNT">
-	    		<ITEM NAME="SERVICE_ACCOUNT" VALUE="SERVICE_ACCOUNT" />
-	    		<ITEM NAME="APPLICATION_CLIENT_ID" VALUE="APPLICATION_CLIENT_ID" />
-	    	</ITEMS>
-		</PARAMETER>
-		<PARAMETER 
-			FIELD="TEXT" 
-			NAME="SERVICE_ACCOUNT_EMAIL" 
-			NUM_ROW="20" 
-			REQUIRED="true" 
-			GROUP="CLIENT" 
-			SHOW_IF="AUTHENTICATION_METHOD == 'SERVICE_ACCOUNT'">
-			<DEFAULT>"[service-account-id]developer.gserviceaccount.com"</DEFAULT>
-		</PARAMETER>
-		<PARAMETER 
-			FIELD="FILE" 
-			NAME="KEY_FILE" 
-			NUM_ROW="21" 
-			REQUIRED="true" 
-			GROUP="CLIENT" 
-			SHOW_IF="AUTHENTICATION_METHOD == 'SERVICE_ACCOUNT'">
-			<DEFAULT>"/tmp/76548c6bc96518473d7e425e1415a14e495d34eb-privatekey.p12"</DEFAULT>
-		</PARAMETER>
-		<PARAMETER 
-			FIELD="TEXT" 
-			NAME="USER_ACCOUNT_EMAIL" 
-			NUM_ROW="20" 
-			REQUIRED="true" 
-			GROUP="CLIENT" 
-			SHOW_IF="AUTHENTICATION_METHOD == 'APPLICATION_CLIENT_ID'">
-			<DEFAULT>"yourmail@gmail.com"</DEFAULT>
-		</PARAMETER>
-		<PARAMETER FIELD="FILE" NAME="CLIENT_SECRET_FILE" NUM_ROW="21" REQUIRED="true" GROUP="CLIENT" 
-			SHOW_IF="AUTHENTICATION_METHOD == 'APPLICATION_CLIENT_ID'">
-			<DEFAULT>"/tmp/client_secret.json"</DEFAULT>
-		</PARAMETER>
-		<PARAMETER FIELD="TEXT" NAME="PROFILE_ID" NUM_ROW="35" REQUIRED="true" GROUP="QUERY">
-			<DEFAULT>"59815695"</DEFAULT>
-		</PARAMETER>
-		<PARAMETER NAME="API_VERSION" FIELD="CLOSED_LIST" NUM_ROW="36" REQUIRED="true" GROUP="QUERY">
-    		<ITEMS DEFAULT="V3">
-    			<ITEM NAME="V3" VALUE="v3" />
-    			<ITEM NAME="V4" VALUE="v4" />
-    		</ITEMS>
-    	</PARAMETER>
-		<PARAMETER FIELD="TEXT" NAME="START_DATE" NUM_ROW="40" REQUIRED="true" GROUP="QUERY"/>
-		<PARAMETER FIELD="TEXT" NAME="END_DATE" NUM_ROW="50" REQUIRED="true" GROUP="QUERY"/>
-		
-		<PARAMETER 
-			FIELD="CHECK" 
-			NAME="USE_JSON_TEMPLATE" 
-			NUM_ROW="55" 
-			REQUIRED="true" 
-			SHOW_IF="API_VERSION == 'v4'" 
-			GROUP="QUERY"/>
-		
-		<PARAMETER 
-			FIELD="LABEL"
-			COLOR="0;0;0"
-			NAME="USE_JSON_TEMPLATE_NOTE" 
-			NUM_ROW="56" 
-			REQUIRED="true" 
-			SHOW_IF="(API_VERSION == 'v4') and (USE_JSON_TEMPLATE == 'true')"
-			GROUP="QUERY">
-			<DEFAULT>The dateRanges and viewId will be replaced by the values from the settings. You can omit dataRanges and viewId in your template.</DEFAULT>
-		</PARAMETER>
-
-		<PARAMETER 
-			FIELD="CLOSED_LIST" 
-			NAME="SETUP_JSON_REPORT_DESCRIPTION" 
-			NUM_ROW="58" 
-			GROUP="QUERY"
-			REQUIRED="true"
-			SHOW_IF="(API_VERSION == 'v4') and (USE_JSON_TEMPLATE == 'true')"
-		>
-	    	<ITEMS DEFAULT="READ_FROM_INPUT_JAVA">
-	    		<ITEM NAME="READ_FROM_INPUT_JAVA" VALUE="READ_FROM_INPUT_JAVA" />
-	    		<ITEM NAME="READ_FROM_INPUT_PLAIN_TEXT" VALUE="READ_FROM_INPUT_PLAIN_TEXT" />
-	    	</ITEMS>
-		</PARAMETER>
-
-	    <PARAMETER 
-	    	NAME="SIMPLIFIED_LINE_BREAKS" 
-	    	FIELD="CHECK" 
-	    	NUM_ROW="59" 
-	    	REQUIRED="true"
-			GROUP="QUERY"
-			SHOW_IF="(API_VERSION == 'v4') and (USE_JSON_TEMPLATE == 'true') and (SETUP_JSON_REPORT_DESCRIPTION == 'READ_FROM_INPUT_JAVA')"
-	    >
-	    	<DEFAULT>true</DEFAULT>
-	    </PARAMETER> 
-
-	    <PARAMETER 
-	    	NAME="JSON_REPORT_TEMPLATE_JAVA" 
-	    	FIELD="MEMO_JAVA" 
-	    	NUM_ROW="60" 
-			GROUP="QUERY"
-	    	REQUIRED="true"
-			SHOW_IF="(API_VERSION == 'v4') and (USE_JSON_TEMPLATE == 'true') and (SETUP_JSON_REPORT_DESCRIPTION == 'READ_FROM_INPUT_JAVA')"
-		>
-	    	<DEFAULT>"{}"</DEFAULT>
-	    </PARAMETER> 
-
-	    <PARAMETER 
-	    	NAME="JSON_REPORT_TEMPLATE_PLAIN_TEXT" 
-	    	FIELD="MEMO_JAVA" 
-	    	NUM_ROW="60" 
-			GROUP="QUERY"
-	    	REQUIRED="true"
-			SHOW_IF="(API_VERSION == 'v4') and (USE_JSON_TEMPLATE == 'true') and (SETUP_JSON_REPORT_DESCRIPTION == 'READ_FROM_INPUT_PLAIN_TEXT')"
-		>
-	    	<DEFAULT>
-	    		<![CDATA[
-{
-  "reportRequests": 
-  [
-    {
-      "dateRanges": 
-      [
-        {
-          "startDate": "xxxx-xx-xx",
-          "endDate": "xxxx-xx-xx"
-        }
-      ],
-      "viewId": "xxxxxx",
-      "dimensions": 
-      [
-        {
-          "name": "ga:source"
-        },
-        {
-          "name": "ga:keyword"
-        }
-      ],
-      "metrics": 
-      [
-        {
-          "expression": "ga:visits"
-        },
-        {
-          "expression": "ga:exits"
-        },
-        {
-          "expression": "ga:goal1Starts"
-        },
-        {
-          "expression": "ga:goal1Completions"
-        }
-      ]
-    }
-  ]
-}
-	    		]]>
-	    	</DEFAULT>
-	    </PARAMETER> 
-
-		<PARAMETER 
-			FIELD="TEXT" 
-			NAME="DIMENSIONS" 
-			NUM_ROW="60" 
-			GROUP="QUERY"
-			SHOW_IF="(API_VERSION == 'v3') or (USE_JSON_TEMPLATE == 'false')"
-		>
-			<DEFAULT>"ga:source,ga:keyword"</DEFAULT>
-		</PARAMETER>
-		
-		<PARAMETER 
-			FIELD="TEXT" 
-			NAME="METRICS" 
-			NUM_ROW="70"	
-			REQUIRED="true" 
-			GROUP="QUERY"
-			SHOW_IF="(API_VERSION == 'v3') or (USE_JSON_TEMPLATE == 'false')"
-		>
-			<DEFAULT>"ga:visits,ga:exits,ga:goal1Starts,ga:goal1Completions"</DEFAULT>
-		</PARAMETER>
-		
-		<PARAMETER 
-			FIELD="TEXT" 
-			NAME="FILTERS" 
-			NUM_ROW="75" 
-			GROUP="QUERY"
-			SHOW_IF="(API_VERSION == 'v3') or (USE_JSON_TEMPLATE == 'false')"
-		>
-			<DEFAULT>"ga:medium==organic"</DEFAULT>
-		</PARAMETER>
-
-		<PARAMETER 
-			FIELD="TEXT" 
-			NAME="SEGMENT" 
-			NUM_ROW="78" 
-			GROUP="QUERY"
-			SHOW_IF="(API_VERSION == 'v3') or (USE_JSON_TEMPLATE == 'false')"
-		>
-			<DEFAULT></DEFAULT>
-		</PARAMETER>
-
-		<PARAMETER 
-			FIELD="TEXT" 
-			NAME="SORTS" 
-			NUM_ROW="80" 
-			GROUP="QUERY"
-			SHOW_IF="(API_VERSION == 'v3') or (USE_JSON_TEMPLATE == 'false')"
-		>
-			<DEFAULT>"-ga:visits,ga:source"</DEFAULT>
-		</PARAMETER>
-
-		<PARAMETER NAME="SAMPLING_LEVEL" FIELD="CLOSED_LIST" NUM_ROW="85" GROUP="QUERY">
-	    	<ITEMS DEFAULT="DEFAULT">
-	    		<ITEM NAME="DEFAULT" VALUE="DEFAULT" />
-	    		<ITEM NAME="FASTER" VALUE="FASTER" />
-	    		<ITEM NAME="HIGHER_PRECISION" VALUE="HIGHER_PRECISION" />
-	    	</ITEMS>
-	    </PARAMETER>
-		<PARAMETER FIELD="CHECK" NAME="DELIVER_TOTALS_DATASET" REQUIRED="true" NUM_ROW="87" GROUP="QUERY">
-			<DEFAULT>false</DEFAULT>
-		</PARAMETER>
-		<PARAMETER FIELD="CHECK" NAME="NORMALIZED_OUTPUT" NUM_ROW="88" GROUP="QUERY">
-			<DEFAULT>false</DEFAULT>
-		</PARAMETER>
-		<PARAMETER FIELD="CHECK" NAME="DENORMALIZE_DATE" NUM_ROW="89" GROUP="QUERY" SHOW_IF="NORMALIZED_OUTPUT == 'true'">
-			<DEFAULT>false</DEFAULT>
-		</PARAMETER>
-		<PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" REQUIRED="false" NUM_ROW="90" GROUP="QUERY" SHOW_IF="NORMALIZED_OUTPUT == 'false'">
-			<DEFAULT />
-		</PARAMETER>
-		<PARAMETER NAME="SCHEMA_DIMENSIONS" FIELD="SCHEMA_TYPE"
-			REQUIRED="false" NUM_ROW="90" CONTEXT="DIMENSION_VALUES" GROUP="QUERY" SHOW_IF="NORMALIZED_OUTPUT == 'true'">
-			<TABLE READONLY="true">
-				<COLUMN NAME="ROW_NUM" TYPE="id_Integer" READONLY="true"
-					CUSTOM="true" LENGTH="22" KEY="true" NULLABLE="false" COMMENT="Row number within the report result"/>
-				<COLUMN NAME="DIMENSION_NAME" TYPE="id_String" READONLY="true"
-					CUSTOM="true" LENGTH="64" NULLABLE="false" COMMENT="Name of the dimension"/>
-				<COLUMN NAME="DIMENSION_VALUE" TYPE="id_String" READONLY="true"
-					CUSTOM="true" LENGTH="128" NULLABLE="true" COMMENT="Value of the dimension"/>
-			</TABLE>
-		</PARAMETER>
-		<PARAMETER NAME="SCHEMA_METRICS" FIELD="SCHEMA_TYPE"
-			REQUIRED="false" NUM_ROW="91" CONTEXT="METRIC_VALUES" GROUP="QUERY" SHOW_IF="NORMALIZED_OUTPUT == 'true'">
-			<TABLE READONLY="true">
-				<COLUMN NAME="ROW_NUM" TYPE="id_Integer" READONLY="true"
-					CUSTOM="true" LENGTH="22" KEY="true" NULLABLE="false" COMMENT="Row number within the report result"/>
-				<COLUMN NAME="METRIC_NAME" TYPE="id_String" READONLY="true"
-					CUSTOM="true" LENGTH="64" NULLABLE="false" COMMENT="Name of the metric"/>
-				<COLUMN NAME="METRIC_VALUE" TYPE="id_Double" READONLY="true"
-					CUSTOM="true" LENGTH="22" PRECISION="4" NULLABLE="true" COMMENT="Value of the metric"/>
-			</TABLE>
-		</PARAMETER>
-		<PARAMETER FIELD="CHECK" NAME="DIE_ON_ERROR" NUM_ROW="100" >
-			<DEFAULT>true</DEFAULT>
-		</PARAMETER>
-	</PARAMETERS>
-	<ADVANCED_PARAMETERS>
-		<PARAMETER FIELD="TEXT" NAME="MAX_ATTEMPTS" NUM_ROW="5" >
-			<DEFAULT>5</DEFAULT>
-		</PARAMETER>
-		<PARAMETER FIELD="TEXT" NAME="TIMEOUT_IN_SEC" NUM_ROW="10" >
-			<DEFAULT>240</DEFAULT>
-		</PARAMETER>
-		<PARAMETER FIELD="TEXT" NAME="TIME_OFFSET" NUM_ROW="15" >
-			<DEFAULT>10000</DEFAULT>
-		</PARAMETER>
-		<PARAMETER FIELD="TEXT" NAME="FETCH_SIZE" NUM_ROW="20" >
-			<DEFAULT>10000</DEFAULT>
-		</PARAMETER>
-		<PARAMETER FIELD="TEXT" NAME="NUMBERFORMAT_LOCALE" NUM_ROW="30" REQUIRED="true">
-			<DEFAULT>"en"</DEFAULT>
-		</PARAMETER>
-		<PARAMETER FIELD="CHECK" NAME="KEEP_CLIENT" NUM_ROW="40" >
-			<DEFAULT>true</DEFAULT>
-		</PARAMETER>
-		<PARAMETER FIELD="TEXT" NAME="KEEP_CLIENT_KEY" NUM_ROW="40" 
-		           SHOW_IF="KEEP_CLIENT == 'true'">
-		</PARAMETER>
-	</ADVANCED_PARAMETERS>
-	<CODEGENERATION>
-		<IMPORTS>
-			<IMPORT NAME="Google Analytics"
-				MODULE="cimt-talendcomp-google-analytics-8.2.jar"
-				REQUIRED="true" />
-		</IMPORTS>
-	</CODEGENERATION>
-	<RETURNS>
-		<RETURN AVAILABILITY="AFTER" NAME="NB_LINE" TYPE="id_Integer" />
-		<RETURN AVAILABILITY="AFTER" NAME="NB_LINE_DIMENSIONS" TYPE="id_Integer" />
-		<RETURN AVAILABILITY="AFTER" NAME="NB_LINE_METRICS" TYPE="id_Integer" />
-		<RETURN AVAILABILITY="AFTER" NAME="CONTAINS_SAMPLED_DATA" TYPE="id_Boolean" />
-		<RETURN AVAILABILITY="AFTER" NAME="SAMPLE_SIZE" TYPE="id_Long" />
-		<RETURN AVAILABILITY="AFTER" NAME="SAMPLE_SPACE" TYPE="id_Long" />
-		<RETURN AVAILABILITY="AFTER" NAME="TOTAL_AFFECTED_ROWS" TYPE="id_Integer" />
-		<RETURN AVAILABILITY="FLOW" NAME="CURRENT_DATE" TYPE="id_Date" />
-		<RETURN AVAILABILITY="AFTER" NAME="ERROR_CODE" TYPE="id_Integer" />
-	</RETURNS>
+<COMPONENT> 
+  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.2" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20170108" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
+    <SIGNATURE/> 
+  </HEADER>  
+  <FAMILIES> 
+    <FAMILY>Business/Google</FAMILY> 
+  </FAMILIES>  
+  <DOCUMENTATION> 
+    <URL/> 
+  </DOCUMENTATION>  
+  <CONNECTORS> 
+    <CONNECTOR CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="1" LINE_STYLE="1" SHOW_IF="NORMALIZED_OUTPUT == 'false'"/>  
+    <CONNECTOR NAME="DIMENSION_VALUES" CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="1" LINE_STYLE="1" SHOW_IF="NORMALIZED_OUTPUT == 'true'"/>  
+    <CONNECTOR NAME="METRIC_VALUES" CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="1" LINE_STYLE="1" SHOW_IF="NORMALIZED_OUTPUT == 'true'"/>  
+    <CONNECTOR CTYPE="ITERATE" MAX_INPUT="1" MAX_OUTPUT="0"/>  
+    <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" MAX_OUTPUT="1"/>  
+    <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" MAX_OUTPUT="1"/>  
+    <CONNECTOR CTYPE="COMPONENT_OK"/>  
+    <CONNECTOR CTYPE="COMPONENT_ERROR"/>  
+    <CONNECTOR CTYPE="RUN_IF"/> 
+  </CONNECTORS>  
+  <PARAMETERS> 
+    <PARAMETER FIELD="TEXT" NAME="APPLICATION_NAME" NUM_ROW="10" GROUP="CLIENT"> 
+      <DEFAULT>"Fetch Analytics"</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="CLOSED_LIST" NAME="AUTHENTICATION_METHOD" NUM_ROW="15" REQUIRED="true" GROUP="CLIENT"> 
+      <ITEMS DEFAULT="SERVICE_ACCOUNT"> 
+        <ITEM NAME="SERVICE_ACCOUNT" VALUE="SERVICE_ACCOUNT"/>  
+        <ITEM NAME="APPLICATION_CLIENT_ID" VALUE="APPLICATION_CLIENT_ID"/> 
+      </ITEMS> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="SERVICE_ACCOUNT_EMAIL" NUM_ROW="20" REQUIRED="true" GROUP="CLIENT" SHOW_IF="AUTHENTICATION_METHOD == 'SERVICE_ACCOUNT'"> 
+      <DEFAULT>"[service-account-id]developer.gserviceaccount.com"</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="FILE" NAME="KEY_FILE" NUM_ROW="21" REQUIRED="true" GROUP="CLIENT" SHOW_IF="AUTHENTICATION_METHOD == 'SERVICE_ACCOUNT'"> 
+      <DEFAULT>"/tmp/76548c6bc96518473d7e425e1415a14e495d34eb-privatekey.p12"</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="USER_ACCOUNT_EMAIL" NUM_ROW="20" REQUIRED="true" GROUP="CLIENT" SHOW_IF="AUTHENTICATION_METHOD == 'APPLICATION_CLIENT_ID'"> 
+      <DEFAULT>"yourmail@gmail.com"</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="FILE" NAME="CLIENT_SECRET_FILE" NUM_ROW="21" REQUIRED="true" GROUP="CLIENT" SHOW_IF="AUTHENTICATION_METHOD == 'APPLICATION_CLIENT_ID'"> 
+      <DEFAULT>"/tmp/client_secret.json"</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="PROFILE_ID" NUM_ROW="35" REQUIRED="true" GROUP="QUERY"> 
+      <DEFAULT>"59815695"</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER NAME="API_VERSION" FIELD="CLOSED_LIST" NUM_ROW="36" REQUIRED="true" GROUP="QUERY"> 
+      <ITEMS DEFAULT="V3"> 
+        <ITEM NAME="V3" VALUE="v3"/>  
+        <ITEM NAME="V4" VALUE="v4"/> 
+      </ITEMS> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="START_DATE" NUM_ROW="40" REQUIRED="true" GROUP="QUERY"/>  
+    <PARAMETER FIELD="TEXT" NAME="END_DATE" NUM_ROW="50" REQUIRED="true" GROUP="QUERY"/>  
+    <PARAMETER FIELD="CHECK" NAME="USE_JSON_TEMPLATE" NUM_ROW="55" REQUIRED="true" SHOW_IF="API_VERSION == 'v4'" GROUP="QUERY"/>  
+    <PARAMETER FIELD="LABEL" COLOR="0;0;0" NAME="USE_JSON_TEMPLATE_NOTE" NUM_ROW="56" REQUIRED="true" SHOW_IF="(API_VERSION == 'v4') and (USE_JSON_TEMPLATE == 'true')" GROUP="QUERY"> 
+      <DEFAULT>The dateRanges and viewId will be replaced by the values from the settings. You can omit dataRanges and viewId in your template.</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="CLOSED_LIST" NAME="SETUP_JSON_REPORT_DESCRIPTION" NUM_ROW="58" GROUP="QUERY" REQUIRED="true" SHOW_IF="(API_VERSION == 'v4') and (USE_JSON_TEMPLATE == 'true')"> 
+      <ITEMS DEFAULT="READ_FROM_INPUT_JAVA"> 
+        <ITEM NAME="READ_FROM_INPUT_JAVA" VALUE="READ_FROM_INPUT_JAVA"/>  
+        <ITEM NAME="READ_FROM_INPUT_PLAIN_TEXT" VALUE="READ_FROM_INPUT_PLAIN_TEXT"/> 
+      </ITEMS> 
+    </PARAMETER>  
+    <PARAMETER NAME="SIMPLIFIED_LINE_BREAKS" FIELD="CHECK" NUM_ROW="59" REQUIRED="true" GROUP="QUERY" SHOW_IF="(API_VERSION == 'v4') and (USE_JSON_TEMPLATE == 'true') and (SETUP_JSON_REPORT_DESCRIPTION == 'READ_FROM_INPUT_JAVA')"> 
+      <DEFAULT>true</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER NAME="JSON_REPORT_TEMPLATE_JAVA" FIELD="MEMO_JAVA" NUM_ROW="60" GROUP="QUERY" REQUIRED="true" SHOW_IF="(API_VERSION == 'v4') and (USE_JSON_TEMPLATE == 'true') and (SETUP_JSON_REPORT_DESCRIPTION == 'READ_FROM_INPUT_JAVA')"> 
+      <DEFAULT>"{}"</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER NAME="JSON_REPORT_TEMPLATE_PLAIN_TEXT" FIELD="MEMO_JAVA" NUM_ROW="60" GROUP="QUERY" REQUIRED="true" SHOW_IF="(API_VERSION == 'v4') and (USE_JSON_TEMPLATE == 'true') and (SETUP_JSON_REPORT_DESCRIPTION == 'READ_FROM_INPUT_PLAIN_TEXT')"> 
+      <DEFAULT> <![CDATA[{  "reportRequests":   [    {      "dateRanges":       [        {          "startDate": "xxxx-xx-xx",          "endDate": "xxxx-xx-xx"        }      ],      "viewId": "xxxxxx",      "dimensions":       [        {          "name": "ga:source"        },        {          "name": "ga:keyword"        }      ],      "metrics":       [        {          "expression": "ga:visits"        },        {          "expression": "ga:exits"        },        {          "expression": "ga:goal1Starts"        },        {          "expression": "ga:goal1Completions"        }      ]    }  ]}	    		]]> </DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="DIMENSIONS" NUM_ROW="60" GROUP="QUERY" SHOW_IF="(API_VERSION == 'v3') or (USE_JSON_TEMPLATE == 'false')"> 
+      <DEFAULT>"ga:source,ga:keyword"</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="METRICS" NUM_ROW="70" REQUIRED="true" GROUP="QUERY" SHOW_IF="(API_VERSION == 'v3') or (USE_JSON_TEMPLATE == 'false')"> 
+      <DEFAULT>"ga:visits,ga:exits,ga:goal1Starts,ga:goal1Completions"</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="FILTERS" NUM_ROW="75" GROUP="QUERY" SHOW_IF="(API_VERSION == 'v3') or (USE_JSON_TEMPLATE == 'false')"> 
+      <DEFAULT>"ga:medium==organic"</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="SEGMENT" NUM_ROW="78" GROUP="QUERY" SHOW_IF="(API_VERSION == 'v3') or (USE_JSON_TEMPLATE == 'false')"> 
+      <DEFAULT/> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="SORTS" NUM_ROW="80" GROUP="QUERY" SHOW_IF="(API_VERSION == 'v3') or (USE_JSON_TEMPLATE == 'false')"> 
+      <DEFAULT>"-ga:visits,ga:source"</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER NAME="SAMPLING_LEVEL" FIELD="CLOSED_LIST" NUM_ROW="85" GROUP="QUERY"> 
+      <ITEMS DEFAULT="DEFAULT"> 
+        <ITEM NAME="DEFAULT" VALUE="DEFAULT"/>  
+        <ITEM NAME="FASTER" VALUE="FASTER"/>  
+        <ITEM NAME="HIGHER_PRECISION" VALUE="HIGHER_PRECISION"/> 
+      </ITEMS> 
+    </PARAMETER>  
+    <PARAMETER FIELD="CHECK" NAME="DELIVER_TOTALS_DATASET" REQUIRED="true" NUM_ROW="87" GROUP="QUERY"> 
+      <DEFAULT>false</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="CHECK" NAME="NORMALIZED_OUTPUT" NUM_ROW="88" GROUP="QUERY"> 
+      <DEFAULT>false</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="CHECK" NAME="DENORMALIZE_DATE" NUM_ROW="89" GROUP="QUERY" SHOW_IF="NORMALIZED_OUTPUT == 'true'"> 
+      <DEFAULT>false</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" REQUIRED="false" NUM_ROW="90" GROUP="QUERY" SHOW_IF="NORMALIZED_OUTPUT == 'false'"> 
+      <DEFAULT/> 
+    </PARAMETER>  
+    <PARAMETER NAME="SCHEMA_DIMENSIONS" FIELD="SCHEMA_TYPE" REQUIRED="false" NUM_ROW="90" CONTEXT="DIMENSION_VALUES" GROUP="QUERY" SHOW_IF="NORMALIZED_OUTPUT == 'true'"> 
+      <TABLE READONLY="true"> 
+        <COLUMN NAME="ROW_NUM" TYPE="id_Integer" READONLY="true" CUSTOM="true" LENGTH="22" KEY="true" NULLABLE="false" COMMENT="Row number within the report result"/>  
+        <COLUMN NAME="DIMENSION_NAME" TYPE="id_String" READONLY="true" CUSTOM="true" LENGTH="64" NULLABLE="false" COMMENT="Name of the dimension"/>  
+        <COLUMN NAME="DIMENSION_VALUE" TYPE="id_String" READONLY="true" CUSTOM="true" LENGTH="128" NULLABLE="true" COMMENT="Value of the dimension"/> 
+      </TABLE> 
+    </PARAMETER>  
+    <PARAMETER NAME="SCHEMA_METRICS" FIELD="SCHEMA_TYPE" REQUIRED="false" NUM_ROW="91" CONTEXT="METRIC_VALUES" GROUP="QUERY" SHOW_IF="NORMALIZED_OUTPUT == 'true'"> 
+      <TABLE READONLY="true"> 
+        <COLUMN NAME="ROW_NUM" TYPE="id_Integer" READONLY="true" CUSTOM="true" LENGTH="22" KEY="true" NULLABLE="false" COMMENT="Row number within the report result"/>  
+        <COLUMN NAME="METRIC_NAME" TYPE="id_String" READONLY="true" CUSTOM="true" LENGTH="64" NULLABLE="false" COMMENT="Name of the metric"/>  
+        <COLUMN NAME="METRIC_VALUE" TYPE="id_Double" READONLY="true" CUSTOM="true" LENGTH="22" PRECISION="4" NULLABLE="true" COMMENT="Value of the metric"/> 
+      </TABLE> 
+    </PARAMETER>  
+    <PARAMETER FIELD="CHECK" NAME="DIE_ON_ERROR" NUM_ROW="100"> 
+      <DEFAULT>true</DEFAULT> 
+    </PARAMETER> 
+  </PARAMETERS>  
+  <ADVANCED_PARAMETERS> 
+    <PARAMETER FIELD="TEXT" NAME="MAX_ATTEMPTS" NUM_ROW="5"> 
+      <DEFAULT>5</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="TIMEOUT_IN_SEC" NUM_ROW="10"> 
+      <DEFAULT>240</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="TIME_OFFSET" NUM_ROW="15"> 
+      <DEFAULT>10000</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="FETCH_SIZE" NUM_ROW="20"> 
+      <DEFAULT>10000</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="NUMBERFORMAT_LOCALE" NUM_ROW="30" REQUIRED="true"> 
+      <DEFAULT>"en"</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="CHECK" NAME="KEEP_CLIENT" NUM_ROW="40"> 
+      <DEFAULT>true</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="KEEP_CLIENT_KEY" NUM_ROW="40" SHOW_IF="KEEP_CLIENT == 'true'"/>  
+    <PARAMETER NAME="RELEASE_LABEL" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
+      <DEFAULT>Release: 8.2 build at: 20170108</DEFAULT>
+    </PARAMETER>
+  </ADVANCED_PARAMETERS>  
+  <CODEGENERATION> 
+    <IMPORTS> 
+      <IMPORT NAME="cimt-talendcomp-google-analytics" MODULE="cimt-talendcomp-google-analytics-8.2.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-api-services-analytics-v3-rev134" MODULE="google-api-services-analytics-v3-rev134-1.22.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-api-client" MODULE="google-api-client-1.22.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-oauth-client" MODULE="google-oauth-client-1.22.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="guava-jdk5" MODULE="guava-jdk5-17.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-api-services-analyticsreporting-v4-rev10" MODULE="google-api-services-analyticsreporting-v4-rev10-1.22.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="jackson-databind" MODULE="jackson-databind-2.7.5.jar" REQUIRED="true"/>
+      <IMPORT NAME="jackson-annotations" MODULE="jackson-annotations-2.7.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="jackson-core" MODULE="jackson-core-2.7.5.jar" REQUIRED="true"/>
+      <IMPORT NAME="httpclient" MODULE="httpclient-4.3.6.jar" REQUIRED="true"/>
+      <IMPORT NAME="httpcore" MODULE="httpcore-4.3.3.jar" REQUIRED="true"/>
+      <IMPORT NAME="commons-logging" MODULE="commons-logging-1.1.3.jar" REQUIRED="true"/>
+      <IMPORT NAME="commons-codec" MODULE="commons-codec-1.6.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-http-client-jackson2" MODULE="google-http-client-jackson2-1.22.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-http-client" MODULE="google-http-client-1.22.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="jsr305" MODULE="jsr305-1.3.9.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-oauth-client-jetty" MODULE="google-oauth-client-jetty-1.22.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-oauth-client-java6" MODULE="google-oauth-client-java6-1.22.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="jetty" MODULE="jetty-6.1.26.jar" REQUIRED="true"/>
+      <IMPORT NAME="jetty-util" MODULE="jetty-util-6.1.26.jar" REQUIRED="true"/>
+      <IMPORT NAME="servlet-api-2.5" MODULE="servlet-api-2.5-20081211.jar" REQUIRED="true"/>
+    </IMPORTS> 
+  </CODEGENERATION>  
+  <RETURNS> 
+    <RETURN AVAILABILITY="AFTER" NAME="NB_LINE" TYPE="id_Integer"/>  
+    <RETURN AVAILABILITY="AFTER" NAME="NB_LINE_DIMENSIONS" TYPE="id_Integer"/>  
+    <RETURN AVAILABILITY="AFTER" NAME="NB_LINE_METRICS" TYPE="id_Integer"/>  
+    <RETURN AVAILABILITY="AFTER" NAME="CONTAINS_SAMPLED_DATA" TYPE="id_Boolean"/>  
+    <RETURN AVAILABILITY="AFTER" NAME="SAMPLE_SIZE" TYPE="id_Long"/>  
+    <RETURN AVAILABILITY="AFTER" NAME="SAMPLE_SPACE" TYPE="id_Long"/>  
+    <RETURN AVAILABILITY="AFTER" NAME="TOTAL_AFFECTED_ROWS" TYPE="id_Integer"/>  
+    <RETURN AVAILABILITY="FLOW" NAME="CURRENT_DATE" TYPE="id_Date"/>  
+    <RETURN AVAILABILITY="AFTER" NAME="ERROR_CODE" TYPE="id_Integer"/> 
+  </RETURNS>
 </COMPONENT>
