@@ -72,6 +72,32 @@
     	}
    }
    String apiVersion = ElementParameterParser.getValue(node, "__API_VERSION__");
+   boolean useJsonTemplate = false;
+   if ("v4".equals(apiVersion)) {
+   	useJsonTemplate = "true".equals(ElementParameterParser.getValue(node, "__USE_JSON_TEMPLATE__"));
+   }
+    String setup = ElementParameterParser.getValue(node, "__SETUP_JSON_REPORT_DESCRIPTION__");
+    String jsonString = "null";
+    if ("READ_FROM_INPUT_PLAIN_TEXT".equals(setup)) {
+		jsonString = ElementParameterParser.getValue(node, "__JSON_REPORT_TEMPLATE_PLAIN_TEXT__");
+    	if (jsonString  != null && jsonString.trim().isEmpty() == false) {
+	    	jsonString = "\"" + jsonString.trim().replace("\r", "").replace("\"", "\\\"").replace("\n", "\\n\" +\n\"") + "\"";
+	   } else {
+    		jsonString = "null";
+    	}
+    } else if ("READ_FROM_INPUT_JAVA".equals(setup)) {
+    	boolean simplifiedLineBreaks = "true".equals(ElementParameterParser.getValue(node, "__SIMPLIFIED_LINE_BREAKS__"));
+		jsonString = ElementParameterParser.getValue(node, "__JSON_REPORT_TEMPLATE_JAVA__");
+    	if (jsonString  != null && jsonString.trim().isEmpty() == false) {
+    		if (simplifiedLineBreaks) {
+	    		jsonString = jsonString.trim().replace("\r", "").replace("\n", "\\n\" +\n\"");
+    		} else {
+	    		jsonString = jsonString.trim().replace("\r", "");
+    		}
+	   } else {
+    		jsonString = "null";
+    	}
+    }
 %>
     // start creating client
 <% if ("true".equals(keepClient)) { %>
@@ -126,18 +152,28 @@
 	<%=cid%>.setStartDate(<%=startDate%>);
 	// for selecting data for one day, set end date == start date
 	<%=cid%>.setEndDate(<%=endDate%>);
-<% if (dimensions != null && dimensions.trim().isEmpty() == false) { %>
+<%	if (useJsonTemplate) {
+		if ("v4".equals(apiVersion)) { %>
+	<%=cid%>.setUseJsonTemplateToBuildRequest(<%=useJsonTemplate%>);
+	<%=cid%>.setJsonReportTemplate(<%=jsonString%>);
+<% 	} %>
+<% } else { 
+		if ("v4".equals(apiVersion)) { %>
+	<%=cid%>.setUseJsonTemplateToBuildRequest(false);
+<% 	} %>
+<% 	if (dimensions != null && dimensions.trim().isEmpty() == false) { %>
 	<%=cid%>.setDimensions(<%=dimensions%>);
-<% } %>
+<% 	} %>
 	<%=cid%>.setMetrics(<%=metrics%>);
-<% if (filters != null && filters.trim().isEmpty() == false) { %>
+<% 	if (filters != null && filters.trim().isEmpty() == false) { %>
 	<%=cid%>.setFilters(<%=filters%>);
-<% } %>
-<% if (segment != null && segment.trim().isEmpty() == false) { %>
+<% 	} %>
+<% 	if (segment != null && segment.trim().isEmpty() == false) { %>
 	<%=cid%>.setSegment(<%=segment%>);
-<% } %>
-<% if (sorts != null && sorts.trim().isEmpty() == false) { %>
+<% 	} %>
+<% 	if (sorts != null && sorts.trim().isEmpty() == false) { %>
 	<%=cid%>.setSorts(<%=sorts%>);
+<% 	} %>
 <% } %>
 <% if (samplingLevel != null && samplingLevel.trim().isEmpty() == false) { %>
 	<%=cid%>.setSamplingLevel("<%=samplingLevel%>");
