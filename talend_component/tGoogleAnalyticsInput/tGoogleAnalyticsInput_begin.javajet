@@ -100,8 +100,14 @@
     }
 %>
     // start creating client
-<% if ("true".equals(keepClient)) { %>
-	de.jlo.talendcomp.google.analytics.<%=apiVersion%>.GoogleAnalyticsInput <%=cid%> = (de.jlo.talendcomp.google.analytics.<%=apiVersion%>.GoogleAnalyticsInput) de.jlo.talendcomp.google.analytics.GoogleAnalyticsBase.getFromCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName);
+<%	if ("true".equals(keepClient)) {
+		String email = null;
+		if (useServiceAccount) {
+			email = accountEmail;
+		} else {
+			email = userEmail;
+		} %>
+	de.jlo.talendcomp.google.analytics.<%=apiVersion%>.GoogleAnalyticsInput <%=cid%> = (de.jlo.talendcomp.google.analytics.<%=apiVersion%>.GoogleAnalyticsInput) de.jlo.talendcomp.google.analytics.GoogleAnalyticsBase.getFromCache(<%=email%> + <%=keepClientName%> + "<%=cid%>" + jobName);
 	if (<%=cid%> == null) {
 		<%=cid%> = new de.jlo.talendcomp.google.analytics.<%=apiVersion%>.GoogleAnalyticsInput();
 <% } else { %>
@@ -142,8 +148,14 @@
 <% } %>	
 			}
 		globalMap.put("<%=cid%>", <%=cid%>);
-<% if ("true".equals(keepClient)) { %>
-		de.jlo.talendcomp.google.analytics.GoogleAnalyticsBase.putIntoCache(<%=accountEmail%> + <%=keepClientName%> + "<%=cid%>" + jobName, <%=cid%>);
+<% if ("true".equals(keepClient)) {
+		String email = null;
+		if (useServiceAccount) {
+			email = accountEmail;
+		} else {
+			email = userEmail;
+		} %>
+		de.jlo.talendcomp.google.analytics.GoogleAnalyticsBase.putIntoCache(<%=email%> + <%=keepClientName%> + "<%=cid%>" + jobName, <%=cid%>);
 	}
 <% }%>
     globalMap.put("<%=cid%>_ERROR_CODE", 0);
