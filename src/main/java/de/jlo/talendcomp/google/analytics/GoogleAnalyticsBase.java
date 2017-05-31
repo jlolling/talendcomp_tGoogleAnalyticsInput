@@ -95,7 +95,7 @@ public class GoogleAnalyticsBase {
 		if (isUseServiceAccount()) {
 			credential = authorizeWithServiceAccount();
 		} else {
-			credential = authorizeWithClientSecret();
+			credential = authorizeWithClientSecretFile();
 		}
 		return credential;
 	}
@@ -108,7 +108,7 @@ public class GoogleAnalyticsBase {
 	 *            list of scopes needed to access general and analytic YouTube
 	 *            info.
 	 */
-	private Credential authorizeWithClientSecret() throws Exception {
+	private Credential authorizeWithClientSecretFile() throws Exception {
 		if (clientSecretFile == null) {
 			throw new IllegalStateException("client secret file is not set");
 		}
