@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.cimt.talendcomp.google</groupId>
-	<artifactId>cimt-talendcomp-google-analytics</artifactId>
-	<version>8.3</version>
+	<groupId>de.jlo.talendcomp.google</groupId>
+	<artifactId>jlo-talendcomp-google-analytics</artifactId>
+	<version>8.4</version>
 	<name>GoogleAnalytics Talend Component</name>
 	<repositories>
 		<repository>
@@ -15,12 +15,12 @@
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-analytics</artifactId>
-			<version>v3-rev136-1.22.0</version>
+			<version>v3-rev139-1.22.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-analyticsreporting</artifactId>
-			<version>v4-rev13-1.22.0</version>
+			<version>v4-rev114-1.22.0</version>
 		</dependency> 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -69,8 +69,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<organization>
-		<name>Jan Lolling@cimt AG</name>
-		<url>http://cimt-ag.de</url>
+		<name>Jan Lolling</name>
+		<url>http://jan-lolling.de</url>
 	</organization>
 	<build>
 		<plugins>
@@ -78,14 +78,14 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>de.cimt.talendcomp</groupId>
 				<artifactId>cimt-talendcomp-maven-plugin</artifactId>
-				<version>1.6</version>
+				<version>1.8</version>
 				<executions>
 					<execution>
 						<configuration>
