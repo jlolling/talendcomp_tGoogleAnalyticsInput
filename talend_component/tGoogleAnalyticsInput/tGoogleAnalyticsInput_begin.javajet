@@ -258,7 +258,7 @@
 	int countLines_<%=cid%> = 0;
 	// deliver the output as plain flow
 	// with dimension and metrics as columns
-	boolean warningAboutSchemaMismatchDone = false;
+	boolean warningAboutSchemaMismatchDone_<%=cid%> = false;
 	while (true) {
 	    try {
 		    // hasNextPlainRecord() executes a new query if needed
@@ -337,8 +337,8 @@
 <%              } %>                
 <%          } %>
 			}
-		} else if (warningAboutSchemaMismatchDone == false) {
-			warningAboutSchemaMismatchDone = true;
+		} else if (warningAboutSchemaMismatchDone_<%=cid%> == false) {
+			warningAboutSchemaMismatchDone_<%=cid%> = true;
 			System.err.println("Warning, the schema contains more columns than the ga result provides (current index=<%=index%>). Please check this!");
 		}
 <%      index++; %>
