@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <COMPONENT> 
-  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.5" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20171017" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
+  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.6" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20181030" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
     <SIGNATURE/> 
   </HEADER>  
   <FAMILIES> 
@@ -145,21 +145,21 @@
       <DEFAULT>true</DEFAULT> 
     </PARAMETER>  
     <PARAMETER FIELD="TEXT" NAME="KEEP_CLIENT_KEY" NUM_ROW="40" SHOW_IF="KEEP_CLIENT == 'true'"/>  
-    <PARAMETER NAME="RELEASE_LABEL_20171017" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
-      <DEFAULT>Release: 8.5 build at: 20171017</DEFAULT>
+    <PARAMETER NAME="RELEASE_LABEL_20181030" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
+      <DEFAULT>Release: 8.6 build at: 20181030</DEFAULT>
     </PARAMETER>
   </ADVANCED_PARAMETERS>  
   <CODEGENERATION> 
     <IMPORTS> 
-      <IMPORT NAME="jlo-talendcomp-google-analytics" MODULE="jlo-talendcomp-google-analytics-8.5.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-api-services-analytics-v3-rev142" MODULE="google-api-services-analytics-v3-rev142-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-api-client" MODULE="google-api-client-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-oauth-client" MODULE="google-oauth-client-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="guava-jdk5" MODULE="guava-jdk5-17.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-api-services-analyticsreporting-v4-rev116" MODULE="google-api-services-analyticsreporting-v4-rev116-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="jackson-databind" MODULE="jackson-databind-2.7.5.jar" REQUIRED="true"/>
-      <IMPORT NAME="jackson-annotations" MODULE="jackson-annotations-2.7.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="jackson-core" MODULE="jackson-core-2.7.5.jar" REQUIRED="true"/>
+      <IMPORT NAME="jlo-talendcomp-google-analytics" MODULE="jlo-talendcomp-google-analytics-8.6.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-api-services-analytics-v3-rev20180622" MODULE="google-api-services-analytics-v3-rev20180622-1.26.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-api-client" MODULE="google-api-client-1.26.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-oauth-client" MODULE="google-oauth-client-1.26.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="guava" MODULE="guava-20.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-api-services-analyticsreporting-v4-rev20180725" MODULE="google-api-services-analyticsreporting-v4-rev20180725-1.26.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="jackson-databind" MODULE="jackson-databind-2.9.5.jar" REQUIRED="true"/>
+      <IMPORT NAME="jackson-annotations" MODULE="jackson-annotations-2.9.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="jackson-core" MODULE="jackson-core-2.9.5.jar" REQUIRED="true"/>
       <IMPORT NAME="httpclient" MODULE="httpclient-4.3.6.jar" REQUIRED="true"/>
       <IMPORT NAME="httpcore" MODULE="httpcore-4.3.3.jar" REQUIRED="true"/>
       <IMPORT NAME="commons-logging" MODULE="commons-logging-1.1.3.jar" REQUIRED="true"/>

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.jlo.talendcomp.google</groupId>
 	<artifactId>jlo-talendcomp-google-analytics</artifactId>
-	<version>8.5</version>
+	<version>8.6</version>
 	<name>GoogleAnalytics Talend Component</name>
 	<repositories>
 		<repository>
@@ -15,17 +15,17 @@
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-analytics</artifactId>
-			<version>v3-rev142-1.22.0</version>
+			<version>v3-rev20180622-1.26.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-analyticsreporting</artifactId>
-			<version>v4-rev116-1.22.0</version>
+			<version>v4-rev20180725-1.26.0</version>
 		</dependency> 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.7.5</version>
+			<version>2.9.5</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
