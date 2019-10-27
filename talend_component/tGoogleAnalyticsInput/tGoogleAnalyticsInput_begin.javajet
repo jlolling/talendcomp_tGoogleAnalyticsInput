@@ -98,6 +98,8 @@
     		jsonString = "null";
     	}
     }
+    boolean log4jEnabled = "true".equals(org.talend.core.model.process.ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__")) && 
+   							"JOBLET".equals(node.getComponent().getComponentType().toString()) == false;
 %>
     // start creating client
 <%	if ("true".equals(keepClient)) {

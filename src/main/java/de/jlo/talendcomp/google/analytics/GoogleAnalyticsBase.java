@@ -100,6 +100,18 @@ public class GoogleAnalyticsBase {
 		return credential;
 	}
 	
+	public void setupLogger(String loggerName, boolean debug) {
+		if (loggerName == null || loggerName.trim().isEmpty()) {
+			throw new IllegalArgumentException("Logger name cannot be null or empty!");
+		}
+		logger = Logger.getLogger(loggerName);
+		if (debug) {
+			logger.setLevel(Level.DEBUG);
+		} else {
+			logger.setLevel(Level.INFO);
+		}
+	}
+	
 	/**
 	 * Authorizes the installed application to access user's protected YouTube
 	 * data.

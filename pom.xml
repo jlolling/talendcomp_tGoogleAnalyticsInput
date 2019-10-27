@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.jlo.talendcomp.google</groupId>
 	<artifactId>jlo-talendcomp-google-analytics</artifactId>
-	<version>8.7</version>
+	<version>8.8</version>
 	<name>GoogleAnalytics Talend Component</name>
 	<repositories>
 		<repository>
@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client-jetty</artifactId>
-			<version>1.22.0</version>
+			<version>1.30.3</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -85,7 +85,12 @@
 			<plugin>
 				<groupId>de.cimt.talendcomp</groupId>
 				<artifactId>cimt-talendcomp-maven-plugin</artifactId>
-				<version>1.8</version>
+				<version>2.1</version>
+				<configuration>
+					<copyFromSourceBaseDir>${project.basedir}/talend_component</copyFromSourceBaseDir>
+					<componentBaseDir>${project.basedir}/talend_component</componentBaseDir>
+					<studioUserComponentFolder>/Data/Talend/Studio/talend_user_components</studioUserComponentFolder>
+				</configuration>
 				<executions>
 					<execution>
 						<configuration>

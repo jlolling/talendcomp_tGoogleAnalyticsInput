@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <COMPONENT> 
-  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.7" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20190925" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
+  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.8" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20191027" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
     <SIGNATURE/> 
   </HEADER>  
   <FAMILIES> 
@@ -145,40 +145,49 @@
       <DEFAULT>true</DEFAULT> 
     </PARAMETER>  
     <PARAMETER FIELD="TEXT" NAME="KEEP_CLIENT_KEY" NUM_ROW="40" SHOW_IF="KEEP_CLIENT == 'true'"/>  
-    <PARAMETER NAME="RELEASE_LABEL_20190925" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
-      <DEFAULT>Release: 8.7 build at: 20190925</DEFAULT>
+    <PARAMETER FIELD="CHECK" NAME="SETUP_LOGGER" NUM_ROW="50"> 
+      <DEFAULT>false</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="TEXT" NAME="LOGGER_NAME" NUM_ROW="51" SHOW_IF="SETUP_LOGGER == 'true'"> 
+      <DEFAULT>jobName + "." + currentComponent</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER FIELD="CHECK" NAME="LOGGER_DEBUG" NUM_ROW="51"> 
+      <DEFAULT>false</DEFAULT> 
+    </PARAMETER>  
+    <PARAMETER NAME="RELEASE_LABEL_20191027" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
+      <DEFAULT>Release: 8.8 build at: 20191027</DEFAULT>
     </PARAMETER>
   </ADVANCED_PARAMETERS>  
   <CODEGENERATION> 
     <IMPORTS> 
-      <IMPORT NAME="jlo-talendcomp-google-analytics" MODULE="jlo-talendcomp-google-analytics-8.7.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-api-services-analytics-v3-rev20190807" MODULE="google-api-services-analytics-v3-rev20190807-1.30.1.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-api-client" MODULE="google-api-client-1.30.1.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-oauth-client" MODULE="google-oauth-client-1.30.1.jar" REQUIRED="true"/>
-      <IMPORT NAME="guava-26.0" MODULE="guava-26.0-android.jar" REQUIRED="true"/>
-      <IMPORT NAME="checker-compat-qual" MODULE="checker-compat-qual-2.5.2.jar" REQUIRED="true"/>
-      <IMPORT NAME="error_prone_annotations" MODULE="error_prone_annotations-2.1.3.jar" REQUIRED="true"/>
-      <IMPORT NAME="animal-sniffer-annotations" MODULE="animal-sniffer-annotations-1.14.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-api-services-analyticsreporting-v4-rev20190904" MODULE="google-api-services-analyticsreporting-v4-rev20190904-1.30.1.jar" REQUIRED="true"/>
-      <IMPORT NAME="jackson-databind" MODULE="jackson-databind-2.9.8.jar" REQUIRED="true"/>
-      <IMPORT NAME="jackson-annotations" MODULE="jackson-annotations-2.9.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="jackson-core" MODULE="jackson-core-2.9.8.jar" REQUIRED="true"/>
-      <IMPORT NAME="httpclient" MODULE="httpclient-4.5.10.jar" REQUIRED="true"/>
-      <IMPORT NAME="httpcore" MODULE="httpcore-4.4.12.jar" REQUIRED="true"/>
-      <IMPORT NAME="commons-logging" MODULE="commons-logging-1.2.jar" REQUIRED="true"/>
-      <IMPORT NAME="commons-codec" MODULE="commons-codec-1.11.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-http-client-jackson2" MODULE="google-http-client-jackson2-1.32.1.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-http-client" MODULE="google-http-client-1.32.1.jar" REQUIRED="true"/>
-      <IMPORT NAME="jsr305" MODULE="jsr305-3.0.2.jar" REQUIRED="true"/>
-      <IMPORT NAME="j2objc-annotations" MODULE="j2objc-annotations-1.3.jar" REQUIRED="true"/>
-      <IMPORT NAME="opencensus-api" MODULE="opencensus-api-0.24.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="grpc-context" MODULE="grpc-context-1.22.1.jar" REQUIRED="true"/>
-      <IMPORT NAME="opencensus-contrib-http-util" MODULE="opencensus-contrib-http-util-0.24.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-oauth-client-jetty" MODULE="google-oauth-client-jetty-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-oauth-client-java6" MODULE="google-oauth-client-java6-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="jetty" MODULE="jetty-6.1.26.jar" REQUIRED="true"/>
-      <IMPORT NAME="jetty-util" MODULE="jetty-util-6.1.26.jar" REQUIRED="true"/>
-      <IMPORT NAME="servlet-api-2.5" MODULE="servlet-api-2.5-20081211.jar" REQUIRED="true"/>
+      <IMPORT NAME="jlo-talendcomp-google-analytics" MODULE="jlo-talendcomp-google-analytics-8.8.jar" MVN="mvn:org.talend.libraries/jlo-talendcomp-google-analytics-8.8/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="google-api-services-analytics-v3-rev20190807" MODULE="google-api-services-analytics-v3-rev20190807-1.30.1.jar" MVN="mvn:org.talend.libraries/google-api-services-analytics-v3-rev20190807-1.30.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="google-api-client" MODULE="google-api-client-1.30.1.jar" MVN="mvn:org.talend.libraries/google-api-client-1.30.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="google-oauth-client" MODULE="google-oauth-client-1.30.1.jar" MVN="mvn:org.talend.libraries/google-oauth-client-1.30.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="guava-26.0" MODULE="guava-26.0-android.jar" MVN="mvn:org.talend.libraries/guava-26.0-android/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="checker-compat-qual" MODULE="checker-compat-qual-2.5.2.jar" MVN="mvn:org.talend.libraries/checker-compat-qual-2.5.2/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="error_prone_annotations" MODULE="error_prone_annotations-2.1.3.jar" MVN="mvn:org.talend.libraries/error_prone_annotations-2.1.3/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="animal-sniffer-annotations" MODULE="animal-sniffer-annotations-1.14.jar" MVN="mvn:org.talend.libraries/animal-sniffer-annotations-1.14/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="google-api-services-analyticsreporting-v4-rev20190904" MODULE="google-api-services-analyticsreporting-v4-rev20190904-1.30.1.jar" MVN="mvn:org.talend.libraries/google-api-services-analyticsreporting-v4-rev20190904-1.30.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="jackson-databind" MODULE="jackson-databind-2.9.8.jar" MVN="mvn:org.talend.libraries/jackson-databind-2.9.8/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="jackson-annotations" MODULE="jackson-annotations-2.9.0.jar" MVN="mvn:org.talend.libraries/jackson-annotations-2.9.0/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="jackson-core" MODULE="jackson-core-2.9.8.jar" MVN="mvn:org.talend.libraries/jackson-core-2.9.8/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="httpclient" MODULE="httpclient-4.5.10.jar" MVN="mvn:org.talend.libraries/httpclient-4.5.10/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="httpcore" MODULE="httpcore-4.4.12.jar" MVN="mvn:org.talend.libraries/httpcore-4.4.12/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="commons-logging" MODULE="commons-logging-1.2.jar" MVN="mvn:org.talend.libraries/commons-logging-1.2/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="commons-codec" MODULE="commons-codec-1.11.jar" MVN="mvn:org.talend.libraries/commons-codec-1.11/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="google-http-client-jackson2" MODULE="google-http-client-jackson2-1.32.1.jar" MVN="mvn:org.talend.libraries/google-http-client-jackson2-1.32.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="google-http-client" MODULE="google-http-client-1.32.1.jar" MVN="mvn:org.talend.libraries/google-http-client-1.32.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="jsr305" MODULE="jsr305-3.0.2.jar" MVN="mvn:org.talend.libraries/jsr305-3.0.2/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="j2objc-annotations" MODULE="j2objc-annotations-1.3.jar" MVN="mvn:org.talend.libraries/j2objc-annotations-1.3/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="opencensus-api" MODULE="opencensus-api-0.24.0.jar" MVN="mvn:org.talend.libraries/opencensus-api-0.24.0/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="grpc-context" MODULE="grpc-context-1.22.1.jar" MVN="mvn:org.talend.libraries/grpc-context-1.22.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="opencensus-contrib-http-util" MODULE="opencensus-contrib-http-util-0.24.0.jar" MVN="mvn:org.talend.libraries/opencensus-contrib-http-util-0.24.0/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="google-oauth-client-jetty" MODULE="google-oauth-client-jetty-1.30.3.jar" MVN="mvn:org.talend.libraries/google-oauth-client-jetty-1.30.3/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="google-oauth-client-java6" MODULE="google-oauth-client-java6-1.30.3.jar" MVN="mvn:org.talend.libraries/google-oauth-client-java6-1.30.3/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="jetty" MODULE="jetty-6.1.26.jar" MVN="mvn:org.talend.libraries/jetty-6.1.26/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="jetty-util" MODULE="jetty-util-6.1.26.jar" MVN="mvn:org.talend.libraries/jetty-util-6.1.26/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="servlet-api-2.5" MODULE="servlet-api-2.5-20081211.jar" MVN="mvn:org.talend.libraries/servlet-api-2.5-20081211/6.0.0-SNAPSHOT" REQUIRED="true"/>
     </IMPORTS> 
   </CODEGENERATION>  
   <RETURNS> 
