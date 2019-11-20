@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <COMPONENT> 
-  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.8" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20191027" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
+  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.9" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20191120" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
     <SIGNATURE/> 
   </HEADER>  
   <FAMILIES> 
@@ -154,13 +154,13 @@
     <PARAMETER FIELD="CHECK" NAME="LOGGER_DEBUG" NUM_ROW="51"> 
       <DEFAULT>false</DEFAULT> 
     </PARAMETER>  
-    <PARAMETER NAME="RELEASE_LABEL_20191027" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
-      <DEFAULT>Release: 8.8 build at: 20191027</DEFAULT>
+    <PARAMETER NAME="RELEASE_LABEL_20191120" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
+      <DEFAULT>Release: 8.9 build at: 20191120</DEFAULT>
     </PARAMETER>
   </ADVANCED_PARAMETERS>  
   <CODEGENERATION> 
     <IMPORTS> 
-      <IMPORT NAME="jlo-talendcomp-google-analytics" MODULE="jlo-talendcomp-google-analytics-8.8.jar" MVN="mvn:org.talend.libraries/jlo-talendcomp-google-analytics-8.8/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="jlo-talendcomp-google-analytics" MODULE="jlo-talendcomp-google-analytics-8.9.jar" MVN="mvn:org.talend.libraries/jlo-talendcomp-google-analytics-8.9/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="google-api-services-analytics-v3-rev20190807" MODULE="google-api-services-analytics-v3-rev20190807-1.30.1.jar" MVN="mvn:org.talend.libraries/google-api-services-analytics-v3-rev20190807-1.30.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="google-api-client" MODULE="google-api-client-1.30.1.jar" MVN="mvn:org.talend.libraries/google-api-client-1.30.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="google-oauth-client" MODULE="google-oauth-client-1.30.1.jar" MVN="mvn:org.talend.libraries/google-oauth-client-1.30.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
