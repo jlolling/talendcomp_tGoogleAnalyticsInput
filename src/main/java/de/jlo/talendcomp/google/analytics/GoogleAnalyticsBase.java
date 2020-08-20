@@ -25,8 +25,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -44,7 +44,7 @@ import com.google.api.services.analytics.AnalyticsScopes;
 
 public class GoogleAnalyticsBase {
 
-	private Logger logger = null;
+	private Logger logger = LoggerFactory.getLogger(GoogleAnalyticsBase.class);
 	private static final Map<String, GoogleAnalyticsBase> clientCache = new HashMap<String, GoogleAnalyticsBase>();
 	private final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
 	private final JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -98,18 +98,6 @@ public class GoogleAnalyticsBase {
 			credential = authorizeWithClientSecretFile();
 		}
 		return credential;
-	}
-	
-	public void setupLogger(String loggerName, boolean debug) {
-		if (loggerName == null || loggerName.trim().isEmpty()) {
-			throw new IllegalArgumentException("Logger name cannot be null or empty!");
-		}
-		logger = Logger.getLogger(loggerName);
-		if (debug) {
-			logger.setLevel(Level.DEBUG);
-		} else {
-			logger.setLevel(Level.INFO);
-		}
 	}
 	
 	/**
@@ -261,23 +249,6 @@ public class GoogleAnalyticsBase {
 			}
 		} else {
 			System.err.println("ERROR:" + message);
-		}
-	}
-
-	public void setLogger(Logger logger) {
-		this.logger = logger;
-	}
-
-	private boolean debug = false;
-
-	public boolean isDebug() {
-		return debug;
-	}
-
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-		if (logger != null) {
-			logger.setLevel(Level.DEBUG);
 		}
 	}
 

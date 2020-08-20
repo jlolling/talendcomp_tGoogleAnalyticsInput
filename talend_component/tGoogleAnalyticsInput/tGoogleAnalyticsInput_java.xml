@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <COMPONENT> 
-  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.10" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20200715" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
+  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.10" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20200820" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
     <SIGNATURE/> 
   </HEADER>  
   <FAMILIES> 
@@ -154,13 +154,14 @@
     <PARAMETER FIELD="CHECK" NAME="LOGGER_DEBUG" NUM_ROW="51"> 
       <DEFAULT>false</DEFAULT> 
     </PARAMETER>  
-    <PARAMETER NAME="RELEASE_LABEL_20200715" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
-      <DEFAULT>Release: 8.10 build at: 20200715</DEFAULT>
+    <PARAMETER NAME="RELEASE_LABEL_20200820" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
+      <DEFAULT>Release: 8.10 build at: 20200820</DEFAULT>
     </PARAMETER>
   </ADVANCED_PARAMETERS>  
   <CODEGENERATION> 
     <IMPORTS> 
       <IMPORT NAME="jlo-talendcomp-google-analytics" MODULE="jlo-talendcomp-google-analytics-8.10.jar" MVN="mvn:org.talend.libraries/jlo-talendcomp-google-analytics-8.10/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="slf4j-api" MODULE="slf4j-api-1.7.30.jar" MVN="mvn:org.talend.libraries/slf4j-api-1.7.30/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="google-api-services-analytics-v3-rev20190807" MODULE="google-api-services-analytics-v3-rev20190807-1.30.10.jar" MVN="mvn:org.talend.libraries/google-api-services-analytics-v3-rev20190807-1.30.10/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="google-api-client" MODULE="google-api-client-1.30.10.jar" MVN="mvn:org.talend.libraries/google-api-client-1.30.10/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="google-oauth-client" MODULE="google-oauth-client-1.31.0.jar" MVN="mvn:org.talend.libraries/google-oauth-client-1.31.0/6.0.0-SNAPSHOT" REQUIRED="true"/>

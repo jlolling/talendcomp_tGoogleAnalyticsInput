@@ -328,9 +328,6 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		for (currentAttempt = 0; currentAttempt < maxRetriesInCaseOfErrors; currentAttempt++) {
 			errorCode = 0;
 			try {
-				if (isDebug()) {
-					debug(getRequest.getRequestMethod() + " " + getRequest.buildHttpRequestUrl().toString());
-				}
 				gaData = getRequest.execute();
 				success = true;
 				break;
@@ -630,6 +627,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		}
 	}
 
+	@Override
 	public Date getCurrentDate() throws ParseException {
 		return currentDate;
 	}
@@ -638,10 +636,12 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		this.excludeDate = excludeDate;
 	}
 
+	@Override
 	public int getErrorCode() {
 		return errorCode;
 	}
 
+	@Override
 	public boolean isSuccess() {
 		return success;
 	}

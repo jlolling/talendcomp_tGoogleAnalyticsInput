@@ -316,20 +316,12 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 	private int maxRetriesInCaseOfErrors = 5;
 	private int currentAttempt = 0;
 	private String errorMessage = null;
-	private JacksonFactory factory = JacksonFactory.getDefaultInstance();
 	
 	private void doExecute() throws Exception {
 		int waitTime = 1000;
 		for (currentAttempt = 0; currentAttempt < maxRetriesInCaseOfErrors; currentAttempt++) {
 			errorCode = 0;
 			try {
-				if (isDebug()) {
-					debug(request.getRequestMethod() + " " + request.buildHttpRequestUrl().toString());
-					if (isDebug()) {
-						String json = factory.toPrettyString(request.getJsonContent());
-						debug(json);
-					}
-				}
 				response = request.execute();
 				success = true;
 				break;
@@ -716,6 +708,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		}
 	}
 
+	@Override
 	public Date getCurrentDate() throws ParseException {
 		return currentDate;
 	}
@@ -724,10 +717,12 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		this.excludeDate = excludeDate;
 	}
 
+	@Override
 	public int getErrorCode() {
 		return errorCode;
 	}
 
+	@Override
 	public boolean isSuccess() {
 		return success;
 	}
