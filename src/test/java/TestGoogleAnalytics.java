@@ -26,10 +26,8 @@ public class TestGoogleAnalytics {
 	}
 
 	public static void testGAData() {
-
 		GoogleAnalyticsInput gi = new GoogleAnalyticsInput();
 		gi.setApplicationName("GATalendComp");
-		gi.setDebug(true);
 		gi.setAccountEmail("503880615382@developer.gserviceaccount.com");
 		gi.setKeyFile("/Volumes/Data/Talend/testdata/ga/config/2bc309bb904201fcc6a443ff50a3d8aca9c0a12c-privatekey.p12");
 		//gi.setAccountEmail("jan.lolling@gmail.com");
@@ -52,15 +50,15 @@ public class TestGoogleAnalytics {
 		// System.out.println("############################# " + i +
 		// " ########################");
 		gi.setProfileId("59815695");
-		gi.setStartDate("2016-01-01");
-		gi.setEndDate("2016-04-01");
-		gi.setDimensions("ga:date,ga:source,ga:keyword,ga:segment");
-		gi.setMetrics("ga:sessions,ga:pageviews");
-		gi.setSegment("sessions::condition::ga:pagePath=~/sqlrunner/");
-		gi.setSorts("-ga:pageviews,ga:sessions");
+		gi.setStartDate("2019-03-01");
+		gi.setEndDate("2021-04-04");
+		gi.setDimensions("ga:date,ga:source,ga:city,ga:keyword");
+		gi.setMetrics("ga:sessions");
+//		gi.setSegment("sessions::condition::ga:pagePath=~/sqlrunner/");
+//		gi.setSorts("-ga:pageviews,ga:sessions");
 		try {
-//			fetchPlainData(gi);
-			fetchNormalizedData(gi);
+			fetchPlainData(gi);
+//			fetchNormalizedData(gi);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

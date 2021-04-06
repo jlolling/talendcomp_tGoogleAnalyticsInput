@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <COMPONENT> 
-  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.10" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20200820" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
+  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.11" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20210406" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
     <SIGNATURE/> 
   </HEADER>  
   <FAMILIES> 
@@ -136,7 +136,7 @@
       <DEFAULT>10000</DEFAULT> 
     </PARAMETER>  
     <PARAMETER FIELD="TEXT" NAME="FETCH_SIZE" NUM_ROW="20"> 
-      <DEFAULT>10000</DEFAULT> 
+      <DEFAULT>1000</DEFAULT> 
     </PARAMETER>  
     <PARAMETER FIELD="TEXT" NAME="NUMBERFORMAT_LOCALE" NUM_ROW="30" REQUIRED="true"> 
       <DEFAULT>"en"</DEFAULT> 
@@ -145,22 +145,13 @@
       <DEFAULT>true</DEFAULT> 
     </PARAMETER>  
     <PARAMETER FIELD="TEXT" NAME="KEEP_CLIENT_KEY" NUM_ROW="40" SHOW_IF="KEEP_CLIENT == 'true'"/>  
-    <PARAMETER FIELD="CHECK" NAME="SETUP_LOGGER" NUM_ROW="50"> 
-      <DEFAULT>false</DEFAULT> 
-    </PARAMETER>  
-    <PARAMETER FIELD="TEXT" NAME="LOGGER_NAME" NUM_ROW="51" SHOW_IF="SETUP_LOGGER == 'true'"> 
-      <DEFAULT>jobName + "." + currentComponent</DEFAULT> 
-    </PARAMETER>  
-    <PARAMETER FIELD="CHECK" NAME="LOGGER_DEBUG" NUM_ROW="51"> 
-      <DEFAULT>false</DEFAULT> 
-    </PARAMETER>  
-    <PARAMETER NAME="RELEASE_LABEL_20200820" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
-      <DEFAULT>Release: 8.10 build at: 20200820</DEFAULT>
+    <PARAMETER NAME="RELEASE_LABEL_20210406" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
+      <DEFAULT>Release: 8.11 build at: 20210406</DEFAULT>
     </PARAMETER>
   </ADVANCED_PARAMETERS>  
   <CODEGENERATION> 
     <IMPORTS> 
-      <IMPORT NAME="jlo-talendcomp-google-analytics" MODULE="jlo-talendcomp-google-analytics-8.10.jar" MVN="mvn:org.talend.libraries/jlo-talendcomp-google-analytics-8.10/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="jlo-talendcomp-google-analytics" MODULE="jlo-talendcomp-google-analytics-8.11.jar" MVN="mvn:org.talend.libraries/jlo-talendcomp-google-analytics-8.11/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="slf4j-api" MODULE="slf4j-api-1.7.30.jar" MVN="mvn:org.talend.libraries/slf4j-api-1.7.30/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="google-api-services-analytics-v3-rev20190807" MODULE="google-api-services-analytics-v3-rev20190807-1.30.10.jar" MVN="mvn:org.talend.libraries/google-api-services-analytics-v3-rev20190807-1.30.10/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="google-api-client" MODULE="google-api-client-1.30.10.jar" MVN="mvn:org.talend.libraries/google-api-client-1.30.10/6.0.0-SNAPSHOT" REQUIRED="true"/>

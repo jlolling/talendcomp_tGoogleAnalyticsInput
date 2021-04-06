@@ -324,6 +324,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 	private String errorMessage = null;
 	
 	private void doExecute() throws Exception {
+		lastFetchedRowCount = 0;
 		int waitTime = 1000;
 		for (currentAttempt = 0; currentAttempt < maxRetriesInCaseOfErrors; currentAttempt++) {
 			errorCode = 0;
@@ -390,6 +391,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		// and count of last fetched data == maxResult what indicated that there
 		// is more than we have currently fetched
 		if (currentPlainRowIndex == lastFetchedRowCount
+				&& lastFetchedRowCount > 0
 				&& (fetchSize == 0 || lastFetchedRowCount == fetchSize)) {
 			startIndex = startIndex + lastFetchedRowCount;
 			getRequest.setStartIndex(startIndex);

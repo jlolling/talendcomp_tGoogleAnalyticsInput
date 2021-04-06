@@ -293,7 +293,6 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		if (fetchSize > 0) {
 			reportRequest.setPageSize(fetchSize);
 		}
-		reportRequest.setPageSize(fetchSize);
 		reportRequest.setPageToken(pageToken);
 		GetReportsRequest getRequest = new GetReportsRequest();
 		getRequest.setReportRequests(Arrays.asList(reportRequest));
@@ -387,7 +386,8 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		// and count of last fetched data == maxResult what indicated that there
 		// is more than we have currently fetched
 		if (currentPlainRowIndex == lastFetchedRowCount
-				&& (fetchSize == 0 || lastFetchedRowCount == fetchSize)) {
+				&& lastFetchedRowCount > 0
+				&& (fetchSize == 0 || (lastFetchedRowCount == fetchSize && pageToken != null))) {
 			startIndex = startIndex + lastFetchedRowCount;
 			setupGetRequest();
 			doExecute();
