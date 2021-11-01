@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <COMPONENT> 
-  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.11" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20210406" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
+  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="8.12" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20211101" STARTABLE="true" HAS_CONDITIONAL_OUTPUTS="true"> 
     <SIGNATURE/> 
   </HEADER>  
   <FAMILIES> 
@@ -145,13 +145,13 @@
       <DEFAULT>true</DEFAULT> 
     </PARAMETER>  
     <PARAMETER FIELD="TEXT" NAME="KEEP_CLIENT_KEY" NUM_ROW="40" SHOW_IF="KEEP_CLIENT == 'true'"/>  
-    <PARAMETER NAME="RELEASE_LABEL_20210406" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
-      <DEFAULT>Release: 8.11 build at: 20210406</DEFAULT>
+    <PARAMETER NAME="RELEASE_LABEL_20211101" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
+      <DEFAULT>Release: 8.12 build at: 20211101</DEFAULT>
     </PARAMETER>
   </ADVANCED_PARAMETERS>  
   <CODEGENERATION> 
     <IMPORTS> 
-      <IMPORT NAME="jlo-talendcomp-google-analytics" MODULE="jlo-talendcomp-google-analytics-8.11.jar" MVN="mvn:org.talend.libraries/jlo-talendcomp-google-analytics-8.11/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="jlo-talendcomp-google-analytics" MODULE="jlo-talendcomp-google-analytics-8.12.jar" MVN="mvn:org.talend.libraries/jlo-talendcomp-google-analytics-8.12/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="slf4j-api" MODULE="slf4j-api-1.7.30.jar" MVN="mvn:org.talend.libraries/slf4j-api-1.7.30/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="google-api-services-analytics-v3-rev20190807" MODULE="google-api-services-analytics-v3-rev20190807-1.30.10.jar" MVN="mvn:org.talend.libraries/google-api-services-analytics-v3-rev20190807-1.30.10/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="google-api-client" MODULE="google-api-client-1.30.10.jar" MVN="mvn:org.talend.libraries/google-api-client-1.30.10/6.0.0-SNAPSHOT" REQUIRED="true"/>
@@ -178,6 +178,8 @@
       <IMPORT NAME="opencensus-contrib-http-util" MODULE="opencensus-contrib-http-util-0.24.0.jar" MVN="mvn:org.talend.libraries/opencensus-contrib-http-util-0.24.0/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="google-oauth-client-jetty" MODULE="google-oauth-client-jetty-1.31.0.jar" MVN="mvn:org.talend.libraries/google-oauth-client-jetty-1.31.0/6.0.0-SNAPSHOT" REQUIRED="true"/>
       <IMPORT NAME="google-oauth-client-java6" MODULE="google-oauth-client-java6-1.31.0.jar" MVN="mvn:org.talend.libraries/google-oauth-client-java6-1.31.0/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="log4j-api" MODULE="log4j-api-2.14.1.jar" MVN="mvn:org.talend.libraries/log4j-api-2.14.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
+      <IMPORT NAME="log4j-core" MODULE="log4j-core-2.14.1.jar" MVN="mvn:org.talend.libraries/log4j-core-2.14.1/6.0.0-SNAPSHOT" REQUIRED="true"/>
     </IMPORTS> 
   </CODEGENERATION>  
   <RETURNS> 

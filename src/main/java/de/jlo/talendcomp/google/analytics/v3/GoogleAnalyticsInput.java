@@ -62,7 +62,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 	private int fetchSize = 0;
 	private GaData gaData;
 	private int lastFetchedRowCount = 0;
-	private int overallRowCount = 0;
+	private int overallPlainRowCount = 0;
 	private int currentPlainRowIndex = 0;
 	private int startIndex = 1;
 	private List<List<String>> lastResultSet;
@@ -265,7 +265,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 			getRequest.setSamplingLevel(samplingLevel);
 		}
 		doExecute();
-		overallRowCount = 0;
+		overallPlainRowCount = 0;
 		totalsDelivered = false;
 		startIndex = 1;
 		maxCountNormalizedValues = 0;
@@ -408,12 +408,11 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		if (gaData == null) {
 			throw new IllegalStateException("No query executed before");
 		}
+		overallPlainRowCount++;
 		if (addTotalsRecord && totalsDelivered == false) {
 			totalsDelivered = true;
-			overallRowCount++;
 			return getTotalsDataset();
 		} else {
-			overallRowCount++;
 			return lastResultSet.get(currentPlainRowIndex++);
 		}
 	}
@@ -489,7 +488,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 			DimensionValue dm = new DimensionValue();
 			dm.name = requestedDimensionNames.get(index);
 			dm.value = oneRow.get(index);
-			dm.rowNum = currentPlainRowIndex;
+			dm.rowNum = overallPlainRowCount;
         	if (excludeDate && DATE_DIME.equalsIgnoreCase(dm.name.trim().toLowerCase())) {
         		try {
         			if (dm.value != null) {
@@ -513,7 +512,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		for (; index < requestedMetricNames.size(); index++) {
 			MetricValue mv = new MetricValue();
 			mv.name = requestedMetricNames.get(index);
-			mv.rowNum = currentPlainRowIndex;
+			mv.rowNum = overallPlainRowCount;
 			String valueStr = oneRow.get(index + countDimensions);
 			try {
 				mv.value = Util.convertToDouble(valueStr, Locale.ENGLISH.toString());
@@ -584,7 +583,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 	}
 
 	public int getOverAllCountRows() {
-		return overallRowCount;
+		return overallPlainRowCount;
 	}
 
 	public boolean containsSampledData() {

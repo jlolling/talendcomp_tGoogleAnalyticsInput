@@ -74,7 +74,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 	private int fetchSize = 0;
 	private String pageToken = null;
 	private int lastFetchedRowCount = 0;
-	private int overallRowCount = 0;
+	private int overallPlainRowCount = 0;
 	private int currentPlainRowIndex = 0;
 	private int startIndex = 1;
 	private List<DimensionValue> currentResultRowDimensionValues;
@@ -282,7 +282,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		}
 		setupGetRequest();
 		doExecute();
-		overallRowCount = 0;
+		overallPlainRowCount = 0;
 		totalsDelivered = false;
 		startIndex = 1;
 		maxCountNormalizedValues = 0;
@@ -403,12 +403,11 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 		if (response == null) {
 			throw new IllegalStateException("No query executed before");
 		}
+		overallPlainRowCount++;
 		if (addTotalsRecord && totalsDelivered == false) {
 			totalsDelivered = true;
-			overallRowCount++;
 			return getTotalsDataset();
 		} else {
-			overallRowCount++;
 			ReportRow row = lastResultSet.get(currentPlainRowIndex++); 
 			return buildRecord(row);
 		}
@@ -509,7 +508,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 			DimensionValue dm = new DimensionValue();
 			dm.name = dimName.trim();
 			dm.value = oneRow.get(index);
-			dm.rowNum = currentPlainRowIndex;
+			dm.rowNum = overallPlainRowCount;
         	if (excludeDate && DATE_DIM.equals(dm.name.trim().toLowerCase())) {
         		try {
         			if (dm.value != null) {
@@ -537,7 +536,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 			if (mv.name == null) {
 				mv.name = metric.getExpression();
 			}
-			mv.rowNum = currentPlainRowIndex;
+			mv.rowNum = overallPlainRowCount;
 			int countDimensions = listDimensions.size();
 			if (excludeSegmentDimension) {
 				countDimensions--;
@@ -637,7 +636,7 @@ public class GoogleAnalyticsInput extends GoogleAnalyticsBase {
 	}
 	
 	public int getOverAllCountRows() {
-		return overallRowCount;
+		return overallPlainRowCount;
 	}
 
 	public boolean containsSampledData() {

@@ -1,7 +1,5 @@
 import java.util.List;
 
-import org.apache.log4j.varia.FallbackErrorHandler;
-
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.analyticsreporting.v4.model.Dimension;
 import com.google.api.services.analyticsreporting.v4.model.ReportRequest;
